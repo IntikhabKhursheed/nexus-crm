@@ -113,6 +113,7 @@ export const register = asyncHandler(async (req, res) => {
   const refreshToken = signRefreshToken({ userId: String(user._id), email: user.email });
 
   await storeRefreshToken(String(user._id), refreshToken);
+  const authData = await buildAuthPayload(String(user._id), user.email);
 
   const data = {
     user: {
@@ -126,6 +127,7 @@ export const register = asyncHandler(async (req, res) => {
       slug: organization.slug,
       billingPlan: organization.billingPlan
     },
+    ...authData,
     accessToken,
     refreshToken
   };
