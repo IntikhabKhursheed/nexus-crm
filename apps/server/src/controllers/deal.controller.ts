@@ -90,7 +90,7 @@ export const updateDeal = asyncHandler(async (req, res) => {
     return sendResponse(res, 400, "Organization context is missing.", {});
   }
 
-  const { dealId } = req.params;
+  const dealId = String(req.params.dealId);
 
   if (!Types.ObjectId.isValid(dealId)) {
     return sendResponse(res, 400, "A valid deal id is required.", {});
@@ -153,7 +153,7 @@ export const updateDealStage = asyncHandler(async (req, res) => {
     return sendResponse(res, 400, "Organization context is missing.", {});
   }
 
-  const { dealId } = req.params;
+  const dealId = String(req.params.dealId);
   const { stage } = req.body as { stage?: typeof validStages[number] };
 
   if (!Types.ObjectId.isValid(dealId)) {
@@ -182,7 +182,7 @@ export const deleteDeal = asyncHandler(async (req, res) => {
     return sendResponse(res, 400, "Organization context is missing.", {});
   }
 
-  const { dealId } = req.params;
+  const dealId = String(req.params.dealId);
 
   if (!Types.ObjectId.isValid(dealId)) {
     return sendResponse(res, 400, "A valid deal id is required.", {});

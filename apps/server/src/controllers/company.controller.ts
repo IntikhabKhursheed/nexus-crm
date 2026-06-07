@@ -34,7 +34,7 @@ export const getCompany = asyncHandler(async (req, res) => {
     return sendResponse(res, 400, "Organization context is missing.", {});
   }
 
-  const { companyId } = req.params;
+  const companyId = String(req.params.companyId);
 
   if (!Types.ObjectId.isValid(companyId)) {
     return sendResponse(res, 400, "A valid company id is required.", {});
@@ -96,7 +96,7 @@ export const updateCompany = asyncHandler(async (req, res) => {
     return sendResponse(res, 400, "Organization context is missing.", {});
   }
 
-  const { companyId } = req.params;
+  const companyId = String(req.params.companyId);
 
   if (!Types.ObjectId.isValid(companyId)) {
     return sendResponse(res, 400, "A valid company id is required.", {});
@@ -139,7 +139,7 @@ export const deleteCompany = asyncHandler(async (req, res) => {
     return sendResponse(res, 400, "Organization context is missing.", {});
   }
 
-  const { companyId } = req.params;
+  const companyId = String(req.params.companyId);
 
   if (!Types.ObjectId.isValid(companyId)) {
     return sendResponse(res, 400, "A valid company id is required.", {});

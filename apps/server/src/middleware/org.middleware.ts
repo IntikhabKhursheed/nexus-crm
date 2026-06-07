@@ -19,13 +19,13 @@ declare global {
 }
 
 function resolveOrganizationId(req: Request) {
-  return (
+  return String(
     req.params.orgId ||
-    req.params.organizationId ||
-    (req.body as { organizationId?: string } | undefined)?.organizationId ||
-    req.headers["x-organization-id"]?.toString() ||
-    req.query.organizationId?.toString() ||
-    ""
+      req.params.organizationId ||
+      (req.body as { organizationId?: string } | undefined)?.organizationId ||
+      req.headers["x-organization-id"] ||
+      req.query.organizationId ||
+      ""
   );
 }
 

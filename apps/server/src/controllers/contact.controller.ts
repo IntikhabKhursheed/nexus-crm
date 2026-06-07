@@ -139,7 +139,7 @@ export const getContact = asyncHandler(async (req, res) => {
     return sendResponse(res, 400, "Organization context is missing.", {});
   }
 
-  const { contactId } = req.params;
+  const contactId = String(req.params.contactId);
 
   if (!Types.ObjectId.isValid(contactId)) {
     return sendResponse(res, 400, "A valid contact id is required.", {});
@@ -168,7 +168,7 @@ export const updateContact = asyncHandler(async (req, res) => {
     return sendResponse(res, 400, "Organization context is missing.", {});
   }
 
-  const { contactId } = req.params;
+  const contactId = String(req.params.contactId);
 
   if (!Types.ObjectId.isValid(contactId)) {
     return sendResponse(res, 400, "A valid contact id is required.", {});
@@ -218,7 +218,7 @@ export const deleteContact = asyncHandler(async (req, res) => {
     return sendResponse(res, 400, "Organization context is missing.", {});
   }
 
-  const { contactId } = req.params;
+  const contactId = String(req.params.contactId);
 
   if (!Types.ObjectId.isValid(contactId)) {
     return sendResponse(res, 400, "A valid contact id is required.", {});
@@ -243,7 +243,7 @@ export const listContactActivities = asyncHandler(async (req, res) => {
     return sendResponse(res, 400, "Organization context is missing.", {});
   }
 
-  const { contactId } = req.params;
+  const contactId = String(req.params.contactId);
 
   if (!Types.ObjectId.isValid(contactId)) {
     return sendResponse(res, 400, "A valid contact id is required.", {});
@@ -261,7 +261,7 @@ export const createContactActivity = asyncHandler(async (req, res) => {
     return sendResponse(res, 400, "Organization context is missing.", {});
   }
 
-  const { contactId } = req.params;
+  const contactId = String(req.params.contactId);
 
   if (!Types.ObjectId.isValid(contactId)) {
     return sendResponse(res, 400, "A valid contact id is required.", {});
