@@ -57,7 +57,7 @@ export function DealKanban({ deals, onStageChange }: DealKanbanProps) {
                       <p className="text-sm text-slate-500">${deal.value.toLocaleString()}</p>
                     </div>
                     <span className="rounded-full bg-muted px-2 py-1 text-xs text-slate-500">
-                      {deal.probability}%
+                      {deal.aiScore?.probabilityScore ?? deal.probability}%
                     </span>
                   </div>
                   <p className="mt-3 text-sm text-slate-500">{deal.notes || "No notes yet."}</p>

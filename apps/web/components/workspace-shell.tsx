@@ -9,7 +9,8 @@ import { ThemeToggle } from "./theme-toggle";
 const links = [
   { href: "/contacts", label: "Contacts" },
   { href: "/companies", label: "Companies" },
-  { href: "/deals", label: "Deal Pipeline" }
+  { href: "/deals", label: "Deal Pipeline" },
+  { href: "/ai", label: "AI Hub" }
 ];
 
 export function WorkspaceShell({ children }: { children: ReactNode }) {

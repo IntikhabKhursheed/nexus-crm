@@ -5,6 +5,30 @@ export const dealStages = ["Lead", "Contacted", "Meeting", "Proposal", "Negotiat
 
 export type DealStage = (typeof dealStages)[number];
 
+export type AiEnrichment = {
+  industry: string;
+  companySize: string;
+  location: string;
+  description: string;
+  keyInsights: string[];
+  confidence: number;
+  companyName?: string;
+  website?: string;
+  emailDomain?: string;
+  model?: string;
+  generatedAt?: string;
+};
+
+export type AiDealScore = {
+  probabilityScore: number;
+  confidence: number;
+  reasoning: string;
+  riskFactors: string[];
+  recommendedNextAction: string;
+  model?: string;
+  generatedAt?: string;
+};
+
 export type Contact = {
   _id: string;
   name: string;
@@ -16,6 +40,7 @@ export type Contact = {
   companyId: string | null;
   companyName: string;
   notes: string;
+  aiEnrichment?: AiEnrichment | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -28,6 +53,7 @@ export type Company = {
   size: string;
   location: string;
   notes: string;
+  aiEnrichment?: AiEnrichment | null;
   createdAt: string;
   updatedAt: string;
   contactCount?: number;
@@ -43,6 +69,7 @@ export type Deal = {
   contactId: string | null;
   companyId: string | null;
   notes: string;
+  aiScore?: AiDealScore | null;
   createdAt: string;
   updatedAt: string;
 };

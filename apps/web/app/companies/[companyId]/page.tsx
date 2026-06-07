@@ -80,6 +80,36 @@ export default function CompanyDetailPage() {
               </div>
 
               {company.notes && <p className="mt-6 whitespace-pre-wrap text-sm text-slate-500">{company.notes}</p>}
+
+              {company.aiEnrichment && (
+                <div className="mt-6 rounded-2xl border border-border bg-card p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="font-semibold">AI enrichment</h3>
+                    <span className="text-xs text-slate-500">{company.aiEnrichment.confidence}% confidence</span>
+                  </div>
+                  <div className="mt-3 grid gap-3 md:grid-cols-2">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Industry</p>
+                      <p className="mt-1 text-sm">{company.aiEnrichment.industry || "-"}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Size</p>
+                      <p className="mt-1 text-sm">{company.aiEnrichment.companySize || "-"}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Location</p>
+                      <p className="mt-1 text-sm">{company.aiEnrichment.location || "-"}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Insight</p>
+                      <p className="mt-1 text-sm">{company.aiEnrichment.keyInsights?.[0] || "-"}</p>
+                    </div>
+                  </div>
+                  {company.aiEnrichment.description && (
+                    <p className="mt-4 text-sm text-slate-500">{company.aiEnrichment.description}</p>
+                  )}
+                </div>
+              )}
             </div>
 
             <div className="glass-card rounded-3xl p-6">
