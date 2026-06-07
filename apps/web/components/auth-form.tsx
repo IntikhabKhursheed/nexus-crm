@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 import axios from "axios";
 import { api } from "@/lib/api";
-import { setTokens } from "@/lib/auth";
+import { setTokens, setWorkspaceSession } from "@/lib/auth";
 
 type AuthFormProps = {
   mode: "login" | "register";
@@ -35,9 +35,10 @@ export function AuthForm({ mode }: AuthFormProps) {
           };
 
       const response = await api.post(endpoint, payload);
-      const { accessToken, refreshToken } = response.data.data;
+      const { accessToken, refreshToken, memberships = [] } = response.data.data;
       setTokens(accessToken, refreshToken);
-      window.location.href = "/";
+      setWorkspaceSession(memberships);
+      window.location.href = "/contacts";
     } catch (submitError) {
       const message = axios.isAxiosError<{ message?: string }>(submitError)
         ? submitError.response?.data?.message ?? "Something went wrong."

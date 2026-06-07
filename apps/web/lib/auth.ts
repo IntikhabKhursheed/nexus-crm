@@ -1,10 +1,29 @@
 const accessTokenKey = "nexuscrm_access_token";
 const refreshTokenKey = "nexuscrm_refresh_token";
 const themeKey = "nexuscrm_theme";
+const membershipsKey = "nexuscrm_memberships";
+const activeOrganizationKey = "nexuscrm_active_organization";
+
+export type StoredMembership = {
+  id: string;
+  role: string;
+  organization: {
+    id: string;
+    name: string;
+    slug: string;
+  };
+};
 
 export function setTokens(accessToken: string, refreshToken: string) {
   localStorage.setItem(accessTokenKey, accessToken);
   localStorage.setItem(refreshTokenKey, refreshToken);
+}
+
+export function setWorkspaceSession(memberships: StoredMembership[]) {
+  localStorage.setItem(membershipsKey, JSON.stringify(memberships));
+  if (memberships.length > 0) {
+    localStorage.setItem(activeOrganizationKey, memberships[0].organization.id);
+  }
 }
 
 export function getAccessToken() {
@@ -20,6 +39,33 @@ export function getRefreshToken() {
 export function clearTokens() {
   localStorage.removeItem(accessTokenKey);
   localStorage.removeItem(refreshTokenKey);
+}
+
+export function getStoredMemberships() {
+  if (typeof window === "undefined") return [];
+  const raw = localStorage.getItem(membershipsKey);
+  if (!raw) return [];
+
+  try {
+    return JSON.parse(raw) as StoredMembership[];
+  } catch {
+    return [];
+  }
+}
+
+export function getActiveOrganizationId() {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(activeOrganizationKey);
+}
+
+export function getActiveOrganization() {
+  const memberships = getStoredMemberships();
+  const activeOrganizationId = getActiveOrganizationId();
+  return memberships.find((membership) => membership.organization.id === activeOrganizationId) ?? memberships[0] ?? null;
+}
+
+export function setActiveOrganizationId(organizationId: string) {
+  localStorage.setItem(activeOrganizationKey, organizationId);
 }
 
 export function getSavedTheme() {
