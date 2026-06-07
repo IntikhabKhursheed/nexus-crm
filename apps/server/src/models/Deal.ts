@@ -47,6 +47,10 @@ const dealSchema = new Schema(
     notes: {
       type: String,
       default: ""
+    },
+    aiScore: {
+      type: Schema.Types.Mixed,
+      default: null
     }
   },
   {

@@ -54,6 +54,10 @@ const contactSchema = new Schema(
     notes: {
       type: String,
       default: ""
+    },
+    aiEnrichment: {
+      type: Schema.Types.Mixed,
+      default: null
     }
   },
   {
