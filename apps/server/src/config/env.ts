@@ -20,7 +20,7 @@ export const env = {
   port: Number(process.env.PORT ?? 5000),
   mongoUri: required("MONGODB_URI", process.env.MONGODB_URL),
   clientOrigin: required("CLIENT_ORIGIN", "http://localhost:3000"),
-  grokApiKey: process.env.GROK_API_KEY ?? process.env.XAI_API_KEY ?? "",
+  grokApiKey: process.env.GROK_API ?? process.env.GROK_API_KEY ?? process.env.XAI_API_KEY ?? "",
   grokBaseUrl: process.env.GROK_BASE_URL ?? "https://api.x.ai/v1",
   grokModel: process.env.GROK_MODEL ?? "llama-3.3-70b-versatile",
   aiRequestTimeoutMs: Number(process.env.AI_REQUEST_TIMEOUT_MS ?? 60000),

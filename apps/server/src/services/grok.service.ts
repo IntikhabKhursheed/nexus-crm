@@ -43,7 +43,7 @@ function extractJson(content: string) {
 
 async function postToGrok(messages: GrokMessage[]) {
   if (!env.grokApiKey) {
-    throw new Error("Grok API key is missing. Set GROK_API_KEY or XAI_API_KEY.");
+    throw new Error("Grok API key is missing. Set GROK_API, GROK_API_KEY, or XAI_API_KEY.");
   }
 
   const response = await fetch(`${env.grokBaseUrl}/chat/completions`, {

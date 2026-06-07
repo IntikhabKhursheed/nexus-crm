@@ -24,6 +24,11 @@ apps/
 
 Copy the example files in each app and fill in your local values.
 
+- `apps/server/.env`
+- `apps/web/.env.local`
+
+The server accepts `GROK_API`, `GROK_API_KEY`, or `XAI_API_KEY` for the AI provider key.
+
 ## Run
 
 Use the app-level scripts:
