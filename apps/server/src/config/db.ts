@@ -1,9 +1,15 @@
 import mongoose from "mongoose";
+import dns from "node:dns";
 import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { env } from "./env.js";
+
+// Windows system DNS often refuses SRV lookups needed by mongodb+srv URIs.
+if (env.mongoUri.startsWith("mongodb+srv://")) {
+  dns.setServers(["8.8.8.8", "1.1.1.1"]);
+}
 
 let memoryServer: MongoMemoryServer | null = null;
 const cachedMongoBinary = path.join(
@@ -17,7 +23,7 @@ const persistentFallbackPath = path.resolve(process.cwd(), ".mongo-data");
 
 async function connectToMongo(uri: string) {
   await mongoose.connect(uri, {
-    serverSelectionTimeoutMS: 5000
+    serverSelectionTimeoutMS: uri.startsWith("mongodb+srv://") ? 15000 : 5000
   });
 }
 

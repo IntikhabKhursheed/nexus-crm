@@ -1,0 +1,5 @@
+.next/
+out/
+.env
+.env.*
+!.env.local.example

@@ -1,0 +1,5 @@
+dist/
+.mongo-data/
+.env
+.env.*
+!.env.example
