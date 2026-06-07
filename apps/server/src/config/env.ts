@@ -1,6 +1,11 @@
 import dotenv from "dotenv";
+import path from "node:path";
 
-dotenv.config();
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
+
+if (!process.env.MONGODB_URI) {
+  dotenv.config({ path: path.resolve(process.cwd(), "..", "..", ".env") });
+}
 
 function required(name: string, fallback?: string) {
   const value = process.env[name] ?? fallback;
