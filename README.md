@@ -35,7 +35,6 @@ nexus-crm/
 │       ├── app/                # pages & layouts
 │       ├── components/         # UI components
 │       ├── lib/                # api, auth, crm helpers
-│       ├── .env.local.example  # copy to .env.local
 │       └── package.json
 ├── package.json                # workspace root scripts
 └── README.md
@@ -51,28 +50,26 @@ npm install
 
 ### 2. Configure environment
 
-Copy the example files and fill in your local values. **Never commit real secrets.**
+The backend and frontend each read their own local env file. That keeps secrets out of git and lets each app use its own settings without mixing them together.
 
 ```bash
 cp apps/server/.env.example apps/server/.env
-cp apps/web/.env.local.example apps/web/.env.local
 ```
 
-**Server (`apps/server/.env`)** — required:
+The web app runs with safe defaults out of the box. Add `apps/web/.env.local` only if you want to override the API URL or proxy origin.
 
-- `MONGODB_URI` — MongoDB connection string
-- `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` — long random strings
+**Server (`apps/server/.env`)**:
 
-**Server** — optional:
+- `MONGODB_URI` - your Atlas or other MongoDB connection string
+- `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` - long random strings
+- `GROK_API`, `GROK_API_KEY`, or `XAI_API_KEY` - AI provider
+- `STRIPE_*` - billing
+- `GMAIL_USER` / `GMAIL_APP_PASSWORD` - email digest
 
-- `GROK_API`, `GROK_API_KEY`, or `XAI_API_KEY` — AI provider
-- `STRIPE_*` — billing
-- `GMAIL_USER` / `GMAIL_APP_PASSWORD` — email digest
+**Web (`apps/web/.env.local`, optional)**:
 
-**Web (`apps/web/.env.local`)**:
-
-- `NEXT_PUBLIC_API_BASE_URL` — defaults to `http://localhost:5000/api`
-- `API_ORIGIN` — used by Next.js proxy rewrites (defaults to `http://localhost:5000`)
+- `NEXT_PUBLIC_API_BASE_URL` - defaults to `/api`
+- `API_ORIGIN` - defaults to `http://localhost:5000`
 
 ### 3. Run
 
@@ -100,8 +97,8 @@ npm run start:web
 ## Security notes
 
 - `.env`, `.env.local`, and all secret files are gitignored.
-- Only `.env.example` / `.env.local.example` belong in git — always use placeholders.
-- JWT and Stripe secrets are **required** in production (dev fallbacks are blocked).
+- Only `.env.example` belongs in git for this setup, and it should stay placeholder-only.
+- JWT and Stripe secrets are **required** in production.
 - If credentials were ever committed to git, **rotate them immediately** in MongoDB Atlas, Stripe, etc.
 
 ## API
