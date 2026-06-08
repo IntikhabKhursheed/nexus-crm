@@ -7,8 +7,8 @@ import { WorkspaceShell } from "@/components/workspace-shell";
 import { getCompany, type Activity, type Company, type Contact, type Deal } from "@/lib/crm";
 
 export default function CompanyDetailPage() {
-  const params = useParams<{ companyId: string }>();
-  const companyId = params.companyId;
+  const params = useParams<{ id: string }>();
+  const companyId = params.id;
   const [company, setCompany] = useState<Company | null>(null);
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [deals, setDeals] = useState<Deal[]>([]);

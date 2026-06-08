@@ -7,11 +7,11 @@ import { CompanyForm } from "@/components/company-form";
 import { getCompany, updateCompany, type CompanyPayload } from "@/lib/crm";
 
 export default function EditCompanyPage() {
-  const params = useParams<{ companyId: string }>();
+  const params = useParams<{ id: string }>();
   const router = useRouter();
   const [initialValues, setInitialValues] = useState<CompanyPayload | null>(null);
   const [loading, setLoading] = useState(true);
-  const companyId = params.companyId;
+  const companyId = params.id;
 
   useEffect(() => {
     async function load() {

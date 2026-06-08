@@ -1,5 +1,5 @@
 {
-  "name": "@nexuscrm/web",
+  "name": "@nexuscrm/client",
   "private": true,
   "version": "1.0.0",
   "scripts": {

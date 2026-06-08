@@ -7,11 +7,11 @@ import { ContactForm } from "@/components/contact-form";
 import { getContact, updateContact, type ContactPayload } from "@/lib/crm";
 
 export default function EditContactPage() {
-  const params = useParams<{ contactId: string }>();
+  const params = useParams<{ id: string }>();
   const router = useRouter();
   const [initialValues, setInitialValues] = useState<ContactPayload | null>(null);
   const [loading, setLoading] = useState(true);
-  const contactId = params.contactId;
+  const contactId = params.id;
 
   useEffect(() => {
     async function load() {

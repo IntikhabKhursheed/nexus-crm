@@ -8,8 +8,8 @@ import { ActivityForm } from "@/components/activity-form";
 import { createContactActivity, getContact, type Activity, type Contact, type Deal } from "@/lib/crm";
 
 export default function ContactDetailPage() {
-  const params = useParams<{ contactId: string }>();
-  const contactId = params.contactId;
+  const params = useParams<{ id: string }>();
+  const contactId = params.id;
   const [contact, setContact] = useState<Contact | null>(null);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [deals, setDeals] = useState<Deal[]>([]);
