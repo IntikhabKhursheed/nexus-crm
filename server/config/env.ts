@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const serverRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+const serverRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 dotenv.config({ path: path.join(serverRoot, ".env") });
 
 function required(name: string, devFallback?: string) {
