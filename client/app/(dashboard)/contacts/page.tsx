@@ -3,6 +3,12 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { WorkspaceShell } from "@/components/workspace-shell";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { EmptyState, ErrorState, LoadingState } from "@/components/ui/states";
+import { Modal } from "@/components/ui/modal";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/toast";
 import { deleteContact, listContacts, type Contact } from "@/lib/crm";
 
 export default function ContactsPage() {
@@ -16,6 +22,9 @@ export default function ContactsPage() {
     tags: ""
   });
   const [error, setError] = useState("");
+  const [contactToDelete, setContactToDelete] = useState<Contact | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const { pushToast } = useToast();
 
   async function loadContacts(filters = query) {
     setLoading(true);
@@ -25,7 +34,9 @@ export default function ContactsPage() {
       const response = await listContacts(filters);
       setContacts(response.contacts);
     } catch (loadError) {
-      setError(loadError instanceof Error ? loadError.message : "Unable to load contacts.");
+      const message = loadError instanceof Error ? loadError.message : "Unable to load contacts.";
+      setError(message);
+      pushToast({ type: "error", title: "Contacts failed to load", description: message });
     } finally {
       setLoading(false);
     }
@@ -36,10 +47,22 @@ export default function ContactsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function handleDelete(contactId: string) {
-    if (!window.confirm("Delete this contact?")) return;
-    await deleteContact(contactId);
-    await loadContacts();
+  async function handleDelete() {
+    if (!contactToDelete) return;
+
+    setDeleting(true);
+    try {
+      await deleteContact(contactToDelete._id);
+      pushToast({ type: "success", title: "Contact deleted", description: contactToDelete.name });
+      setContactToDelete(null);
+      await loadContacts();
+    } catch (deleteError) {
+      const message = deleteError instanceof Error ? deleteError.message : "Unable to delete contact.";
+      setError(message);
+      pushToast({ type: "error", title: "Delete failed", description: message });
+    } finally {
+      setDeleting(false);
+    }
   }
 
   return (
@@ -58,47 +81,46 @@ export default function ContactsPage() {
           </Link>
         </div>
 
-        <div className="glass-card rounded-3xl p-4">
+        <Card className="p-4">
           <div className="grid gap-3 md:grid-cols-5">
             {Object.entries(query).map(([key, value]) => (
-              <input
+              <Input
                 key={key}
                 placeholder={key.toUpperCase()}
                 value={value}
                 onChange={(event) => setQuery({ ...query, [key]: event.target.value })}
-                className="rounded-2xl border border-border bg-card px-4 py-3 text-sm outline-none"
               />
             ))}
           </div>
           <div className="mt-4 flex gap-3">
-            <button
-              type="button"
-              onClick={() => void loadContacts()}
-              className="rounded-2xl border border-border bg-card px-4 py-2 text-sm font-semibold"
-            >
+            <Button variant="secondary" onClick={() => void loadContacts()}>
               Search
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              variant="ghost"
               onClick={() => {
                 const reset = { q: "", name: "", email: "", company: "", tags: "" };
                 setQuery(reset);
                 void loadContacts(reset);
               }}
-              className="rounded-2xl border border-border bg-card px-4 py-2 text-sm font-semibold"
             >
               Reset
-            </button>
+            </Button>
           </div>
-        </div>
+        </Card>
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        {error && <ErrorState description={error} onRetry={() => void loadContacts()} />}
 
-        <div className="glass-card overflow-hidden rounded-3xl">
+        <Card className="overflow-hidden p-0">
           {loading ? (
-            <div className="p-8 text-sm text-slate-500">Loading contacts...</div>
+            <LoadingState label="Loading contacts..." />
           ) : contacts.length === 0 ? (
-            <div className="p-8 text-sm text-slate-500">No contacts yet.</div>
+            <EmptyState
+              title="No contacts yet"
+              description="Add your first contact to start tracking conversations, deals, and AI insights."
+              actionLabel="Add contact"
+              onAction={() => (window.location.href = "/contacts/new")}
+            />
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full text-left">
@@ -138,7 +160,7 @@ export default function ContactsPage() {
                           </Link>
                           <button
                             type="button"
-                            onClick={() => void handleDelete(contact._id)}
+                            onClick={() => setContactToDelete(contact)}
                             className="text-sm font-semibold text-red-500 underline"
                           >
                             Delete
@@ -151,7 +173,16 @@ export default function ContactsPage() {
               </table>
             </div>
           )}
-        </div>
+        </Card>
+        <Modal
+          open={Boolean(contactToDelete)}
+          title="Delete contact?"
+          description={`This will permanently remove ${contactToDelete?.name ?? "this contact"} from the workspace.`}
+          confirmLabel="Delete contact"
+          loading={deleting}
+          onCancel={() => setContactToDelete(null)}
+          onConfirm={() => void handleDelete()}
+        />
       </div>
     </WorkspaceShell>
   );

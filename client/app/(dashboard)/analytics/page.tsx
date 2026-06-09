@@ -2,13 +2,22 @@
 
 import { useEffect, useState } from "react";
 import { WorkspaceShell } from "@/components/workspace-shell";
+import { Card } from "@/components/ui/card";
+import { ErrorState, LoadingState } from "@/components/ui/states";
 import { getAnalyticsDashboard } from "@/lib/analytics";
 
 export default function AnalyticsPage() {
   const [analytics, setAnalytics] = useState<Awaited<ReturnType<typeof getAnalyticsDashboard>>["analytics"] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    void getAnalyticsDashboard().then((response) => setAnalytics(response.analytics));
+    void getAnalyticsDashboard()
+      .then((response) => setAnalytics(response.analytics))
+      .catch((loadError) => {
+        setError(loadError instanceof Error ? loadError.message : "Unable to load analytics.");
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   return (
@@ -19,8 +28,14 @@ export default function AnalyticsPage() {
           <h2 className="mt-2 text-3xl font-semibold">Executive dashboard</h2>
         </div>
 
-        {!analytics ? (
-          <p className="text-sm text-slate-500">Loading analytics...</p>
+        {loading ? (
+          <LoadingState label="Loading analytics..." />
+        ) : error ? (
+          <ErrorState description={error} onRetry={() => window.location.reload()} />
+        ) : !analytics ? (
+          <Card>
+            <p className="text-sm text-slate-500">No analytics available yet.</p>
+          </Card>
         ) : (
           <>
             <div className="grid gap-4 md:grid-cols-3 xl:grid-cols-5">
@@ -94,4 +109,3 @@ export default function AnalyticsPage() {
     </WorkspaceShell>
   );
 }
-

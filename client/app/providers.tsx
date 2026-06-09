@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { useEffect } from "react";
 import { getSavedTheme } from "@/lib/auth";
+import { ToastProvider } from "@/components/ui/toast";
 
 export function Providers({ children }: { children: ReactNode }) {
   useEffect(() => {
@@ -10,5 +11,5 @@ export function Providers({ children }: { children: ReactNode }) {
     document.documentElement.classList.toggle("dark", savedTheme === "dark");
   }, []);
 
-  return children;
+  return <ToastProvider>{children}</ToastProvider>;
 }

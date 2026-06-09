@@ -2,6 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { WorkspaceShell } from "@/components/workspace-shell";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { EmptyState, ErrorState, LoadingState } from "@/components/ui/states";
+import { useToast } from "@/components/ui/toast";
 import {
   getUnreadNotificationCount,
   listNotifications,
@@ -15,6 +19,7 @@ export default function NotificationsPage() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const { pushToast } = useToast();
 
   async function loadData() {
     setLoading(true);
@@ -27,7 +32,9 @@ export default function NotificationsPage() {
       setNotifications(notificationsResponse.notifications);
       setUnreadCount(unreadResponse.unreadCount);
     } catch (loadError) {
-      setError(loadError instanceof Error ? loadError.message : "Unable to load notifications.");
+      const message = loadError instanceof Error ? loadError.message : "Unable to load notifications.";
+      setError(message);
+      pushToast({ type: "error", title: "Notifications failed to load", description: message });
     } finally {
       setLoading(false);
     }
@@ -49,6 +56,7 @@ export default function NotificationsPage() {
   async function handleMarkAllRead() {
     try {
       await markAllNotificationsRead();
+      pushToast({ type: "success", title: "Notifications cleared", description: "All notifications marked as read." });
       await loadData();
     } catch {
       // Ignore bulk mark-read failures for now.
@@ -69,11 +77,13 @@ export default function NotificationsPage() {
         </div>
 
         <p className="text-sm text-slate-500">Unread count: {unreadCount}</p>
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        {error && <ErrorState description={error} onRetry={() => void loadData()} />}
 
-        <div className="space-y-3">
+        <Card className="space-y-3">
           {loading ? (
-            <p className="text-sm text-slate-500">Loading notifications...</p>
+            <LoadingState label="Loading notifications..." />
+          ) : notifications.length === 0 ? (
+            <EmptyState title="No notifications yet" description="Activity from your organization will show up here in real time." />
           ) : (
             notifications.map((notification) => (
               <button
@@ -96,8 +106,7 @@ export default function NotificationsPage() {
               </button>
             ))
           )}
-          {!loading && notifications.length === 0 && <p className="text-sm text-slate-500">No notifications yet.</p>}
-        </div>
+        </Card>
       </div>
     </WorkspaceShell>
   );

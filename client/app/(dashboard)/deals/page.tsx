@@ -4,6 +4,11 @@ import type { FormEvent } from "react";
 import { useEffect, useState } from "react";
 import { WorkspaceShell } from "@/components/workspace-shell";
 import { DealKanban } from "@/components/deal-kanban";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { EmptyState, ErrorState, LoadingState } from "@/components/ui/states";
+import { Input, Textarea, Select } from "@/components/ui/input";
+import { useToast } from "@/components/ui/toast";
 import {
   createDeal,
   listDeals,
@@ -30,6 +35,7 @@ export default function DealsPage() {
   const [error, setError] = useState("");
   const [form, setForm] = useState<DealPayload>(emptyDeal);
   const [saving, setSaving] = useState(false);
+  const { pushToast } = useToast();
 
   async function loadDeals() {
     setLoading(true);
@@ -39,7 +45,9 @@ export default function DealsPage() {
       const response = await listDeals();
       setDeals(response.deals);
     } catch (loadError) {
-      setError(loadError instanceof Error ? loadError.message : "Unable to load deals.");
+      const message = loadError instanceof Error ? loadError.message : "Unable to load deals.";
+      setError(message);
+      pushToast({ type: "error", title: "Deals failed to load", description: message });
     } finally {
       setLoading(false);
     }
@@ -57,9 +65,12 @@ export default function DealsPage() {
     try {
       await createDeal(form);
       setForm(emptyDeal);
+      pushToast({ type: "success", title: "Deal created", description: form.title });
       await loadDeals();
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Unable to create deal.");
+      const message = submitError instanceof Error ? submitError.message : "Unable to create deal.";
+      setError(message);
+      pushToast({ type: "error", title: "Unable to create deal", description: message });
     } finally {
       setSaving(false);
     }
@@ -82,25 +93,22 @@ export default function DealsPage() {
           </div>
         </div>
 
-        <div className="glass-card rounded-3xl p-6">
+        <Card>
           <h3 className="text-xl font-semibold">Create deal</h3>
           <form onSubmit={handleCreateDeal} className="mt-4 space-y-4">
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              <input
-                className="rounded-2xl border border-border bg-card px-4 py-3 outline-none"
+              <Input
                 placeholder="Title"
                 value={form.title}
                 onChange={(event) => setForm({ ...form, title: event.target.value })}
               />
-              <input
-                className="rounded-2xl border border-border bg-card px-4 py-3 outline-none"
+              <Input
                 placeholder="Value"
                 type="number"
                 value={form.value}
                 onChange={(event) => setForm({ ...form, value: event.target.value })}
               />
-              <select
-                className="rounded-2xl border border-border bg-card px-4 py-3 outline-none"
+              <Select
                 value={form.stage}
                 onChange={(event) => setForm({ ...form, stage: event.target.value as DealPayload["stage"] })}
               >
@@ -109,62 +117,65 @@ export default function DealsPage() {
                     {stage}
                   </option>
                 ))}
-              </select>
-              <input
-                className="rounded-2xl border border-border bg-card px-4 py-3 outline-none"
+              </Select>
+              <Input
                 placeholder="Probability"
                 type="number"
                 value={form.probability}
                 onChange={(event) => setForm({ ...form, probability: event.target.value })}
               />
-              <input
-                className="rounded-2xl border border-border bg-card px-4 py-3 outline-none"
+              <Input
                 placeholder="Expected close date"
                 type="date"
                 value={form.expectedCloseDate}
                 onChange={(event) => setForm({ ...form, expectedCloseDate: event.target.value })}
               />
-              <input
-                className="rounded-2xl border border-border bg-card px-4 py-3 outline-none"
+              <Input
                 placeholder="Contact ID"
                 value={form.contactId}
                 onChange={(event) => setForm({ ...form, contactId: event.target.value })}
               />
-              <input
-                className="rounded-2xl border border-border bg-card px-4 py-3 outline-none"
+              <Input
                 placeholder="Company ID"
                 value={form.companyId}
                 onChange={(event) => setForm({ ...form, companyId: event.target.value })}
               />
             </div>
-            <textarea
-              className="min-h-28 w-full rounded-2xl border border-border bg-card px-4 py-3 outline-none"
+            <Textarea
               placeholder="Notes"
               value={form.notes}
               onChange={(event) => setForm({ ...form, notes: event.target.value })}
             />
             {error && <p className="text-sm text-red-500">{error}</p>}
-            <button
+            <Button
               type="submit"
               disabled={saving}
-              className="rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white transition hover:opacity-90 disabled:opacity-60 dark:bg-slate-100 dark:text-slate-950"
             >
               {saving ? "Saving..." : "Create deal"}
-            </button>
+            </Button>
           </form>
-        </div>
+        </Card>
 
-        <div className="glass-card rounded-3xl p-6">
+        <Card>
           <h3 className="text-xl font-semibold">Pipeline board</h3>
           <p className="mt-2 text-sm text-slate-500">Drag a card between stages to update the deal stage.</p>
           <div className="mt-6">
             {loading ? (
-              <p className="text-sm text-slate-500">Loading deals...</p>
+              <LoadingState label="Loading deals..." />
+            ) : error ? (
+              <ErrorState description={error} onRetry={() => void loadDeals()} />
+            ) : deals.length === 0 ? (
+              <EmptyState
+                title="No deals yet"
+                description="Create your first deal to populate the pipeline and track stage movement."
+                actionLabel="Reload deals"
+                onAction={() => void loadDeals()}
+              />
             ) : (
               <DealKanban deals={deals} onStageChange={handleStageChange} />
             )}
           </div>
-        </div>
+        </Card>
       </div>
     </WorkspaceShell>
   );

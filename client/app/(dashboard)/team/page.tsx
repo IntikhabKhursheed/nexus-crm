@@ -2,6 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { WorkspaceShell } from "@/components/workspace-shell";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { EmptyState, ErrorState, LoadingState } from "@/components/ui/states";
+import { Input, Select } from "@/components/ui/input";
+import { useToast } from "@/components/ui/toast";
 import {
   inviteTeamMember,
   listTeamMembers,
@@ -21,6 +26,7 @@ export default function TeamPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [form, setForm] = useState(defaultForm);
+  const { pushToast } = useToast();
 
   async function loadData() {
     setLoading(true);
@@ -30,7 +36,9 @@ export default function TeamPage() {
       setMembers(response.members);
       setInvitations(response.invitations);
     } catch (loadError) {
-      setError(loadError instanceof Error ? loadError.message : "Unable to load team members.");
+      const message = loadError instanceof Error ? loadError.message : "Unable to load team members.";
+      setError(message);
+      pushToast({ type: "error", title: "Team failed to load", description: message });
     } finally {
       setLoading(false);
     }
@@ -44,9 +52,12 @@ export default function TeamPage() {
     try {
       await inviteTeamMember(form);
       setForm(defaultForm);
+      pushToast({ type: "success", title: "Invite sent", description: form.email });
       await loadData();
     } catch (inviteError) {
-      setError(inviteError instanceof Error ? inviteError.message : "Unable to invite team member.");
+      const message = inviteError instanceof Error ? inviteError.message : "Unable to invite team member.";
+      setError(message);
+      pushToast({ type: "error", title: "Invite failed", description: message });
     }
   }
 
@@ -58,19 +69,17 @@ export default function TeamPage() {
           <h2 className="mt-2 text-3xl font-semibold">Team management</h2>
         </div>
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        {error && <ErrorState description={error} onRetry={() => void loadData()} />}
 
-        <section className="glass-card rounded-3xl p-6">
+        <Card>
           <h3 className="text-xl font-semibold">Invite member</h3>
           <div className="mt-4 grid gap-4 md:grid-cols-[1fr_220px_auto]">
-            <input
-              className="rounded-2xl border border-border bg-card px-4 py-3 outline-none"
+            <Input
               placeholder="Email address"
               value={form.email}
               onChange={(event) => setForm({ ...form, email: event.target.value })}
             />
-            <select
-              className="rounded-2xl border border-border bg-card px-4 py-3 outline-none"
+            <Select
               value={form.role}
               onChange={(event) => setForm({ ...form, role: event.target.value as TeamRole })}
             >
@@ -78,21 +87,27 @@ export default function TeamPage() {
               <option value="admin">Admin</option>
               <option value="sales_manager">Sales Manager</option>
               <option value="sales_representative">Sales Representative</option>
-            </select>
-            <button onClick={() => void handleInvite()} className="rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white">
-              Send invite
-            </button>
+            </Select>
+            <Button onClick={() => void handleInvite()}>Send invite</Button>
           </div>
-        </section>
+        </Card>
 
-        <section className="glass-card rounded-3xl p-6">
+        <Card>
           <h3 className="text-xl font-semibold">Members</h3>
           <div className="mt-4 space-y-3">
             {loading ? (
-              <p className="text-sm text-slate-500">Loading team members...</p>
+              <LoadingState label="Loading team members..." />
+            ) : members.length === 0 ? (
+              <EmptyState
+                title="No team members yet"
+                description="Invite people to collaborate inside the same organization."
+              />
             ) : (
               members.map((member) => (
-                <div key={member.id} className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 md:flex-row md:items-center md:justify-between">
+                <div
+                  key={member.id}
+                  className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-4 md:flex-row md:items-center md:justify-between"
+                >
                   <div>
                     <p className="font-semibold">{member.user.name}</p>
                     <p className="text-sm text-slate-500">{member.user.email}</p>
@@ -101,54 +116,82 @@ export default function TeamPage() {
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <select
-                      className="rounded-2xl border border-border bg-background px-3 py-2 text-sm"
+                    <Select
+                      className="min-w-48"
                       value={member.role}
                       onChange={(event) =>
                         void updateTeamMemberRole(member.id, event.target.value as TeamRole)
                           .then(loadData)
-                          .catch((updateError) =>
-                            setError(updateError instanceof Error ? updateError.message : "Unable to update role.")
+                          .then(() =>
+                            pushToast({
+                              type: "success",
+                              title: "Role updated",
+                              description: member.user.email
+                            })
                           )
+                          .catch((updateError) => {
+                            const message = updateError instanceof Error ? updateError.message : "Unable to update role.";
+                            setError(message);
+                            pushToast({ type: "error", title: "Role update failed", description: message });
+                          })
                       }
                     >
                       <option value="owner">Owner</option>
                       <option value="admin">Admin</option>
                       <option value="sales_manager">Sales Manager</option>
                       <option value="sales_representative">Sales Representative</option>
-                    </select>
-                    <button
+                    </Select>
+                    <Button
+                      variant="secondary"
                       onClick={() =>
                         void suspendTeamMember(member.id)
                           .then(loadData)
-                          .catch((suspendError) =>
-                            setError(suspendError instanceof Error ? suspendError.message : "Unable to suspend member.")
+                          .then(() =>
+                            pushToast({
+                              type: "success",
+                              title: "Member suspended",
+                              description: member.user.email
+                            })
                           )
+                          .catch((suspendError) => {
+                            const message =
+                              suspendError instanceof Error ? suspendError.message : "Unable to suspend member.";
+                            setError(message);
+                            pushToast({ type: "error", title: "Suspend failed", description: message });
+                          })
                       }
-                      className="rounded-2xl border border-border bg-card px-4 py-2 text-sm font-semibold"
                     >
                       Suspend
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      variant="danger"
                       onClick={() =>
                         void removeTeamMember(member.id)
                           .then(loadData)
-                          .catch((removeError) =>
-                            setError(removeError instanceof Error ? removeError.message : "Unable to remove member.")
+                          .then(() =>
+                            pushToast({
+                              type: "success",
+                              title: "Member removed",
+                              description: member.user.email
+                            })
                           )
+                          .catch((removeError) => {
+                            const message = removeError instanceof Error ? removeError.message : "Unable to remove member.";
+                            setError(message);
+                            pushToast({ type: "error", title: "Remove failed", description: message });
+                          })
                       }
-                      className="rounded-2xl border border-red-500/40 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-600"
                     >
                       Remove
-                    </button>
+                    </Button>
                   </div>
                 </div>
               ))
             )}
           </div>
-        </section>
+        </Card>
 
-        <section className="glass-card rounded-3xl p-6">
+        <Card>
           <h3 className="text-xl font-semibold">Pending invitations</h3>
           <div className="mt-4 space-y-3">
             {invitations.map((invitation) => (
@@ -157,9 +200,14 @@ export default function TeamPage() {
                 <p className="text-slate-500">{invitation.role}</p>
               </div>
             ))}
-            {invitations.length === 0 && <p className="text-sm text-slate-500">No pending invitations.</p>}
+            {!loading && invitations.length === 0 && (
+              <EmptyState
+                title="No pending invitations"
+                description="Invitations will appear here until they are accepted or expire."
+              />
+            )}
           </div>
-        </section>
+        </Card>
       </div>
     </WorkspaceShell>
   );
