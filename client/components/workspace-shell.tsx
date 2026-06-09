@@ -4,13 +4,21 @@ import Link from "next/link";
 import type { ChangeEvent, ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { getActiveOrganization, getStoredMemberships, setActiveOrganizationId, type StoredMembership } from "@/lib/auth";
+import { NotificationBell } from "./notification-bell";
 import { ThemeToggle } from "./theme-toggle";
 
 const links = [
   { href: "/contacts", label: "Contacts" },
   { href: "/companies", label: "Companies" },
   { href: "/deals", label: "Deal Pipeline" },
-  { href: "/ai", label: "AI Hub" }
+  { href: "/ai", label: "AI Hub" },
+  { href: "/campaigns", label: "Campaigns" },
+  { href: "/reports", label: "Reports" },
+  { href: "/analytics", label: "Analytics" },
+  { href: "/team", label: "Team" },
+  { href: "/settings", label: "Settings" },
+  { href: "/audit-logs", label: "Audit Logs" },
+  { href: "/notifications", label: "Notifications" }
 ];
 
 export function WorkspaceShell({ children }: { children: ReactNode }) {
@@ -40,7 +48,10 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
                 <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Workspace</p>
                 <h1 className="text-xl font-semibold text-foreground">NexusCRM</h1>
               </div>
-              <ThemeToggle />
+              <div className="flex items-center gap-2">
+                <NotificationBell organizationId={activeOrg?.organization.id ?? ""} />
+                <ThemeToggle />
+              </div>
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
