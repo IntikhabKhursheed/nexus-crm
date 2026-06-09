@@ -29,6 +29,32 @@ const organizationSchema = new Schema(
       enum: ["active", "past_due", "canceled", "trialing", "inactive"],
       default: "active"
     },
+    logoUrl: {
+      type: String,
+      default: ""
+    },
+    timezone: {
+      type: String,
+      default: "UTC"
+    },
+    currency: {
+      type: String,
+      default: "USD"
+    },
+    branding: {
+      primaryColor: {
+        type: String,
+        default: "#0f172a"
+      },
+      secondaryColor: {
+        type: String,
+        default: "#64748b"
+      },
+      accentColor: {
+        type: String,
+        default: "#38bdf8"
+      }
+    },
     stripeCustomerId: {
       type: String,
       default: ""

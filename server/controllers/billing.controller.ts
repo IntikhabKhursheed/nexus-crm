@@ -1,9 +1,12 @@
 import { Types } from "mongoose";
+import Stripe from "stripe";
 import { env } from "../config/env.js";
 import { stripe } from "../config/stripe.js";
 import { billingPlans, type BillingPlanKey } from "../constants/plans.js";
 import { Organization } from "../models/Organization.js";
 import { Subscription } from "../models/Subscription.js";
+import { recordAuditLog } from "../services/audit.service.js";
+import { createOrganizationNotifications } from "../services/notification.service.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { sendResponse } from "../utils/apiResponse.js";
 
@@ -54,6 +57,25 @@ export const createCheckoutSession = asyncHandler(async (req, res) => {
       { upsert: true, new: true }
     );
 
+    await createOrganizationNotifications({
+      organizationId,
+      type: "subscription_upgraded",
+      title: "Subscription updated",
+      message: "The organization has been moved to the free plan.",
+      metadata: { plan: "free" }
+    });
+
+    if (req.auth?.userId) {
+      await recordAuditLog({
+        organizationId,
+        userId: req.auth.userId,
+        action: "subscription_changed",
+        entityType: "subscription",
+        entityId: organizationId,
+        metadata: { plan: "free" }
+      });
+    }
+
     return sendResponse(res, 200, "Free plan activated.", {
       redirectUrl: null
     });
@@ -78,7 +100,8 @@ export const createCheckoutSession = asyncHandler(async (req, res) => {
     cancel_url: `${env.clientOrigin}/billing?canceled=1`,
     metadata: {
       organizationId: String(organization._id),
-      plan
+      plan,
+      userId: req.auth?.userId ?? ""
     }
   });
 
@@ -107,5 +130,78 @@ export const createBillingPortalSession = asyncHandler(async (req, res) => {
 
   return sendResponse(res, 200, "Billing portal created successfully.", {
     redirectUrl: portalSession.url
+  });
+});
+
+export const handleStripeWebhook = asyncHandler(async (req, res) => {
+  const signature = req.headers["stripe-signature"];
+
+  if (!signature || Array.isArray(signature)) {
+    return sendResponse(res, 400, "Stripe signature is required.", {});
+  }
+
+  if (!env.stripeWebhookSecret) {
+    return sendResponse(res, 500, "Stripe webhook secret is not configured.", {});
+  }
+
+  let event: Stripe.Event;
+
+  try {
+    event = stripe.webhooks.constructEvent(req.body, signature, env.stripeWebhookSecret);
+  } catch (error) {
+    return sendResponse(res, 400, error instanceof Error ? error.message : "Invalid Stripe webhook.", {});
+  }
+
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object as Stripe.Checkout.Session;
+    const organizationId = String(session.metadata?.organizationId ?? "");
+    const plan = String(session.metadata?.plan ?? "");
+
+    if (organizationId && Types.ObjectId.isValid(organizationId) && plan) {
+      await Organization.findByIdAndUpdate(organizationId, {
+        billingPlan: plan,
+        billingStatus: "active",
+        stripeCustomerId: typeof session.customer === "string" ? session.customer : "",
+        stripeSubscriptionId: typeof session.subscription === "string" ? session.subscription : ""
+      });
+
+      await Subscription.findOneAndUpdate(
+        { organizationId },
+        {
+          organizationId,
+          plan,
+          status: "active",
+          stripeCustomerId: typeof session.customer === "string" ? session.customer : "",
+          stripeSubscriptionId: typeof session.subscription === "string" ? session.subscription : ""
+        },
+        { upsert: true, new: true }
+      );
+
+      await createOrganizationNotifications({
+        organizationId,
+        type: "subscription_upgraded",
+        title: "Subscription upgraded",
+        message: `The organization subscription has been upgraded to ${plan}.`,
+        metadata: { plan }
+      });
+
+      const actorUserId = String(session.metadata?.userId ?? "");
+      if (actorUserId) {
+        await recordAuditLog({
+          organizationId,
+          userId: actorUserId,
+          action: "subscription_upgraded",
+          entityType: "subscription",
+          entityId: String(session.subscription ?? ""),
+          metadata: { plan }
+        });
+      }
+    }
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "Webhook processed successfully.",
+    data: {}
   });
 });

@@ -10,6 +10,8 @@ import { sendResponse } from "../utils/apiResponse.js";
 import { env } from "../config/env.js";
 import { generateContactEnrichment, generateSalesAnalysis, generateSalesDraft } from "../services/grok.service.js";
 import { isEmailConfigured, sendEmailMessage } from "../services/email.service.js";
+import { createOrganizationNotifications } from "../services/notification.service.js";
+import { recordAuditLog } from "../services/audit.service.js";
 
 type AiInsightType =
   | "contact-enrichment"
@@ -177,6 +179,7 @@ function serializeDeal(deal: Record<string, unknown> | null | undefined) {
 
 async function storeInsight(params: {
   organizationId: string;
+  userId?: string;
   type: AiInsightType;
   title: string;
   input: unknown;
@@ -216,6 +219,25 @@ async function storeInsight(params: {
     insightId: String(insight._id),
     type: params.type
   });
+
+  await createOrganizationNotifications({
+    organizationId: params.organizationId,
+    type: "ai_report_generated",
+    title: "AI report generated",
+    message: `${params.title} is ready.`,
+    metadata: { insightId: String(insight._id), type: params.type }
+  });
+
+  if (params.userId) {
+    await recordAuditLog({
+      organizationId: params.organizationId,
+      userId: params.userId,
+      action: "ai_action",
+      entityType: "ai_insight",
+      entityId: String(insight._id),
+      metadata: { type: params.type, title: params.title }
+    });
+  }
 }
 
 async function resolveCompanyTarget(
@@ -454,6 +476,7 @@ Return JSON with this shape:
 
   await storeInsight({
     organizationId: req.organization.id,
+    userId: req.auth?.userId,
     type: "contact-enrichment",
     title: "AI contact and company enrichment",
     input: { companyId, contactId, companyName, website, emailDomain },
@@ -537,6 +560,7 @@ Return JSON with this shape:
 
   await storeInsight({
     organizationId: req.organization.id,
+    userId: req.auth?.userId,
     type: "email-writer",
     title: "AI email draft",
     input: { contactId, companyId, dealId, goal },
@@ -613,6 +637,7 @@ Return JSON with this shape:
 
   await storeInsight({
     organizationId: req.organization.id,
+    userId: req.auth?.userId,
     type: "deal-scoring",
     title: "AI deal score",
     input: { dealId },
@@ -684,6 +709,7 @@ Return JSON with this shape:
 
   await storeInsight({
     organizationId: req.organization.id,
+    userId: req.auth?.userId,
     type: "meeting-brief",
     title: "AI meeting brief",
     input: { contactId, companyId, dealId },
@@ -741,6 +767,7 @@ Return JSON with this shape:
 
   await storeInsight({
     organizationId: req.organization.id,
+    userId: req.auth?.userId,
     type: "revenue-forecast",
     title: "AI revenue forecast",
     input: { dealCount: deals.length, activityCount: activities.length },
@@ -857,6 +884,7 @@ Return JSON with this shape:
     emailStatus = "failed";
     await storeInsight({
       organizationId: req.organization.id,
+      userId: req.auth?.userId,
       type: "weekly-digest",
       title: "AI weekly sales digest",
       input: { toEmail: recipient, since: since.toISOString() },
@@ -873,6 +901,7 @@ Return JSON with this shape:
 
   await storeInsight({
     organizationId: req.organization.id,
+    userId: req.auth?.userId,
     type: "weekly-digest",
     title: "AI weekly sales digest",
     input: { toEmail: recipient, since: since.toISOString() },

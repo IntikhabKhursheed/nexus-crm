@@ -2,6 +2,8 @@ import { Types } from "mongoose";
 import { Company } from "../models/Company.js";
 import { Contact } from "../models/Contact.js";
 import { Deal } from "../models/Deal.js";
+import { createOrganizationNotifications } from "../services/notification.service.js";
+import { recordAuditLog } from "../services/audit.service.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { sendResponse } from "../utils/apiResponse.js";
 
@@ -82,6 +84,15 @@ export const createDeal = asyncHandler(async (req, res) => {
     notes: notes ?? ""
   });
 
+  await recordAuditLog({
+    organizationId: req.organization.id,
+    userId: req.auth?.userId ?? "",
+    action: "deal_created",
+    entityType: "deal",
+    entityId: String(deal._id),
+    metadata: { title, stage: stage ?? "Lead", value: value ?? 0 }
+  });
+
   return sendResponse(res, 201, "Deal created successfully.", { deal });
 });
 
@@ -145,6 +156,14 @@ export const updateDeal = asyncHandler(async (req, res) => {
 
   await deal.save();
 
+  await recordAuditLog({
+    organizationId: req.organization.id,
+    userId: req.auth?.userId ?? "",
+    action: "deal_updated",
+    entityType: "deal",
+    entityId: String(deal._id)
+  });
+
   return sendResponse(res, 200, "Deal updated successfully.", { deal });
 });
 
@@ -174,6 +193,24 @@ export const updateDealStage = asyncHandler(async (req, res) => {
     return sendResponse(res, 404, "Deal not found.", {});
   }
 
+  await createOrganizationNotifications({
+    organizationId: req.organization.id,
+    type: "deal_stage_changed",
+    title: "Deal stage updated",
+    message: `${deal.title} moved to ${stage}.`,
+    metadata: { dealId: String(deal._id), stage },
+    excludeUserId: req.auth?.userId
+  });
+
+  await recordAuditLog({
+    organizationId: req.organization.id,
+    userId: req.auth?.userId ?? "",
+    action: "deal_stage_updated",
+    entityType: "deal",
+    entityId: String(deal._id),
+    metadata: { stage }
+  });
+
   return sendResponse(res, 200, "Deal stage updated successfully.", { deal });
 });
 
@@ -193,6 +230,14 @@ export const deleteDeal = asyncHandler(async (req, res) => {
   if (!deal) {
     return sendResponse(res, 404, "Deal not found.", {});
   }
+
+  await recordAuditLog({
+    organizationId: req.organization.id,
+    userId: req.auth?.userId ?? "",
+    action: "deal_deleted",
+    entityType: "deal",
+    entityId: dealId
+  });
 
   return sendResponse(res, 200, "Deal deleted successfully.", {});
 });

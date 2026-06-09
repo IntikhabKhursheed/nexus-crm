@@ -1,6 +1,8 @@
+import { createServer } from "node:http";
 import { connectDatabase } from "./config/db.js";
 import { env } from "./config/env.js";
 import { app } from "./app.js";
+import { initRealtime } from "./services/realtime.service.js";
 
 async function isHealthyServerRunning(port: number) {
   try {
@@ -22,7 +24,10 @@ async function isHealthyServerRunning(port: number) {
 async function bootstrap() {
   await connectDatabase();
 
-  const server = app.listen(env.port, () => {
+  const server = createServer(app);
+  initRealtime(server, env.clientOrigin);
+
+  server.listen(env.port, () => {
     console.log(`NexusCRM API running on port ${env.port}`);
   });
 

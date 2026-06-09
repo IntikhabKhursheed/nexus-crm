@@ -4,6 +4,7 @@ import { Membership } from "../models/Membership.js";
 import { Organization } from "../models/Organization.js";
 import { RefreshToken } from "../models/RefreshToken.js";
 import { User } from "../models/User.js";
+import { recordAuditLog } from "../services/audit.service.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { sendResponse } from "../utils/apiResponse.js";
 import { signAccessToken, signRefreshToken } from "../utils/jwt.js";
@@ -115,6 +116,14 @@ export const register = asyncHandler(async (req, res) => {
   await storeRefreshToken(String(user._id), refreshToken);
   const authData = await buildAuthPayload(String(user._id), user.email);
 
+  await recordAuditLog({
+    organizationId: String(organization._id),
+    userId: String(user._id),
+    action: "user_registered",
+    entityType: "user",
+    entityId: String(user._id)
+  });
+
   const data = {
     user: {
       id: String(user._id),
@@ -166,6 +175,17 @@ export const login = asyncHandler(async (req, res) => {
   await storeRefreshToken(String(user._id), refreshToken);
 
   const authData = await buildAuthPayload(String(user._id), user.email);
+
+  const activeOrganizationId = authData.memberships[0]?.organization.id;
+  if (activeOrganizationId) {
+    await recordAuditLog({
+      organizationId: activeOrganizationId,
+      userId: String(user._id),
+      action: "user_login",
+      entityType: "user",
+      entityId: String(user._id)
+    });
+  }
 
   return sendResponse(res, 200, "Logged in successfully.", {
     ...authData,

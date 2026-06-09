@@ -14,8 +14,8 @@ const membershipSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ["owner", "admin", "member"],
-      default: "member"
+      enum: ["owner", "admin", "sales_manager", "sales_representative"],
+      default: "sales_representative"
     },
     status: {
       type: String,

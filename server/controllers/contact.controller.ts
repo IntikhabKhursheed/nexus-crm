@@ -3,6 +3,8 @@ import { Activity } from "../models/Activity.js";
 import { Company } from "../models/Company.js";
 import { Contact } from "../models/Contact.js";
 import { Deal } from "../models/Deal.js";
+import { createOrganizationNotifications } from "../services/notification.service.js";
+import { recordAuditLog } from "../services/audit.service.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { sendResponse } from "../utils/apiResponse.js";
 
@@ -131,6 +133,24 @@ export const createContact = asyncHandler(async (req, res) => {
     notes: notes ?? ""
   });
 
+  await recordAuditLog({
+    organizationId: req.organization.id,
+    userId: req.auth?.userId ?? "",
+    action: "contact_created",
+    entityType: "contact",
+    entityId: String(contact._id),
+    metadata: { name, email }
+  });
+
+  await createOrganizationNotifications({
+    organizationId: req.organization.id,
+    type: "contact_created",
+    title: "New contact created",
+    message: `${contact.name} was added to the organization.`,
+    metadata: { contactId: String(contact._id) },
+    excludeUserId: req.auth?.userId
+  });
+
   return sendResponse(res, 201, "Contact created successfully.", { contact });
 });
 
@@ -210,6 +230,14 @@ export const updateContact = asyncHandler(async (req, res) => {
 
   await existingContact.save();
 
+  await recordAuditLog({
+    organizationId: req.organization.id,
+    userId: req.auth?.userId ?? "",
+    action: "contact_updated",
+    entityType: "contact",
+    entityId: String(existingContact._id)
+  });
+
   return sendResponse(res, 200, "Contact updated successfully.", { contact: existingContact });
 });
 
@@ -234,6 +262,14 @@ export const deleteContact = asyncHandler(async (req, res) => {
     Deal.updateMany({ organizationId: req.organization.id, contactId }, { $set: { contactId: null } }),
     Activity.updateMany({ organizationId: req.organization.id, contactId }, { $set: { contactId: null } })
   ]);
+
+  await recordAuditLog({
+    organizationId: req.organization.id,
+    userId: req.auth?.userId ?? "",
+    action: "contact_deleted",
+    entityType: "contact",
+    entityId: contactId
+  });
 
   return sendResponse(res, 200, "Contact deleted successfully.", {});
 });

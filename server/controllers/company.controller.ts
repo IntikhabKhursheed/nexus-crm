@@ -3,6 +3,8 @@ import { Activity } from "../models/Activity.js";
 import { Company } from "../models/Company.js";
 import { Contact } from "../models/Contact.js";
 import { Deal } from "../models/Deal.js";
+import { createOrganizationNotifications } from "../services/notification.service.js";
+import { recordAuditLog } from "../services/audit.service.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { sendResponse } from "../utils/apiResponse.js";
 
@@ -88,6 +90,24 @@ export const createCompany = asyncHandler(async (req, res) => {
     notes: notes ?? ""
   });
 
+  await recordAuditLog({
+    organizationId: req.organization.id,
+    userId: req.auth?.userId ?? "",
+    action: "company_created",
+    entityType: "company",
+    entityId: String(company._id),
+    metadata: { name, website }
+  });
+
+  await createOrganizationNotifications({
+    organizationId: req.organization.id,
+    type: "company_created",
+    title: "New company created",
+    message: `${company.name} was added to the organization.`,
+    metadata: { companyId: String(company._id) },
+    excludeUserId: req.auth?.userId
+  });
+
   return sendResponse(res, 201, "Company created successfully.", { company });
 });
 
@@ -131,6 +151,14 @@ export const updateCompany = asyncHandler(async (req, res) => {
     { $set: { companyName: company.name } }
   );
 
+  await recordAuditLog({
+    organizationId: req.organization.id,
+    userId: req.auth?.userId ?? "",
+    action: "company_updated",
+    entityType: "company",
+    entityId: String(company._id)
+  });
+
   return sendResponse(res, 200, "Company updated successfully.", { company });
 });
 
@@ -159,6 +187,14 @@ export const deleteCompany = asyncHandler(async (req, res) => {
     Deal.updateMany({ organizationId: req.organization.id, companyId }, { $set: { companyId: null } }),
     Activity.updateMany({ organizationId: req.organization.id, companyId }, { $set: { companyId: null } })
   ]);
+
+  await recordAuditLog({
+    organizationId: req.organization.id,
+    userId: req.auth?.userId ?? "",
+    action: "company_deleted",
+    entityType: "company",
+    entityId: companyId
+  });
 
   return sendResponse(res, 200, "Company deleted successfully.", {});
 });
