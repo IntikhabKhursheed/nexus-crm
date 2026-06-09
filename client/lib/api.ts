@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getAccessToken, getRefreshToken, setTokens } from "./auth";
+import { clearTokens, getAccessToken, getRefreshToken, setTokens } from "./auth";
 import { webEnv } from "./env";
 
 export const api = axios.create({
@@ -36,21 +36,25 @@ api.interceptors.response.use(
       const refreshToken = getRefreshToken();
 
       if (refreshToken) {
-        const refreshResponse = await axios.post(
-          `${webEnv.apiBaseUrl}/auth/refresh`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${refreshToken}`
+        try {
+          const refreshResponse = await axios.post(
+            `${webEnv.apiBaseUrl}/auth/refresh`,
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${refreshToken}`
+              }
             }
-          }
-        );
+          );
 
-        const { accessToken, refreshToken: newRefreshToken } = refreshResponse.data.data;
-        setTokens(accessToken, newRefreshToken);
-        originalRequest.headers = originalRequest.headers ?? {};
-        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-        return api(originalRequest as any);
+          const { accessToken, refreshToken: newRefreshToken } = refreshResponse.data.data;
+          setTokens(accessToken, newRefreshToken);
+          originalRequest.headers = originalRequest.headers ?? {};
+          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+          return api(originalRequest as any);
+        } catch {
+          clearTokens();
+        }
       }
     }
 
