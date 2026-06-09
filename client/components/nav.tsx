@@ -3,15 +3,23 @@ import { ThemeToggle } from "./theme-toggle";
 
 export function Nav() {
   return (
-    <header className="flex items-center justify-between gap-4">
-      <Link href="/" className="text-lg font-semibold tracking-tight">
+    <header
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: "16px",
+        padding: "12px 0"
+      }}
+    >
+      <Link href="/" style={{ fontSize: "18px", fontWeight: 700, letterSpacing: "-0.02em", color: "#0f172a" }}>
         NexusCRM
       </Link>
-      <div className="flex items-center gap-3">
-        <Link href="/login" className="text-sm text-slate-500 transition hover:text-foreground">
+      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <Link href="/login" style={{ fontSize: "14px", color: "#64748b" }}>
           Login
         </Link>
-        <Link href="/register" className="text-sm text-slate-500 transition hover:text-foreground">
+        <Link href="/register" style={{ fontSize: "14px", color: "#64748b" }}>
           Register
         </Link>
         <ThemeToggle />
