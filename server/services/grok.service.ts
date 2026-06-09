@@ -42,34 +42,53 @@ function extractJson(content: string) {
 }
 
 async function postToGrok(messages: GrokMessage[]) {
-  if (!env.grokApiKey) {
-    throw new Error("Grok API key is missing. Set GROK_API, GROK_API_KEY, or XAI_API_KEY.");
+  if (!env.groqApiKey) {
+    throw new Error("Groq API key is missing. Set GROQ_API_KEY (or the legacy GROK_API / GROK_API_KEY / XAI_API_KEY aliases).");
   }
 
-  const response = await fetch(`${env.grokBaseUrl}/chat/completions`, {
+  const requestBody = {
+    model: env.groqModel,
+    messages,
+    stream: false
+  };
+
+  console.info("[AI][Groq] Request", {
+    baseUrl: env.groqBaseUrl,
+    model: env.groqModel,
+    messageCount: messages.length,
+    messages: messages.map((message) => ({
+      role: message.role,
+      contentPreview: message.content.slice(0, 400)
+    }))
+  });
+
+  const response = await fetch(`${env.groqBaseUrl}/chat/completions`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${env.grokApiKey}`
+      Authorization: `Bearer ${env.groqApiKey}`
     },
-    body: JSON.stringify({
-      model: env.grokModel,
-      messages,
-      stream: false
-    }),
+    body: JSON.stringify(requestBody),
     signal: AbortSignal.timeout(env.aiRequestTimeoutMs)
   });
 
+  const responseText = await response.text();
+
+  console.info("[AI][Groq] Response", {
+    ok: response.ok,
+    status: response.status,
+    bodyPreview: responseText.slice(0, 500)
+  });
+
   if (!response.ok) {
-    const errorBody = await response.text();
-    throw new Error(`Grok API request failed with status ${response.status}: ${errorBody}`);
+    throw new Error(`Groq API request failed with status ${response.status}: ${responseText}`);
   }
 
-  const data = (await response.json()) as GrokChatResponse;
+  const data = JSON.parse(responseText) as GrokChatResponse;
   const content = data.choices?.[0]?.message?.content;
 
   if (!content) {
-    throw new Error("Grok returned an empty response.");
+    throw new Error("Groq returned an empty response.");
   }
 
   return content;

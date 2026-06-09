@@ -1,3 +1,4 @@
+import type { Request, Response } from "express";
 import { Types } from "mongoose";
 import { AiInsight } from "../models/AiInsight.js";
 import { Activity } from "../models/Activity.js";
@@ -80,6 +81,58 @@ function buildDomainFromWebsite(website: string) {
   return cleaned.split("/")[0] ?? "";
 }
 
+function getAiRequestSnapshot(req: Request) {
+  return {
+    endpoint: req.originalUrl,
+    method: req.method,
+    body: req.body,
+    auth: req.auth ?? null,
+    user: req.user ?? null,
+    organization: req.organization ?? null
+  };
+}
+
+function logAiRequest(endpoint: string, req: Request, extra: Record<string, unknown> = {}) {
+  console.info(`[AI][${endpoint}] Request`, {
+    ...getAiRequestSnapshot(req),
+    ...extra
+  });
+}
+
+function logMongoStep(endpoint: string, step: string, details: Record<string, unknown> = {}) {
+  console.info(`[AI][${endpoint}][Mongo] ${step}`, details);
+}
+
+function sendAiError(res: Response, req: Request, endpoint: string, error: unknown) {
+  const normalizedError = error instanceof Error ? error : new Error(String(error));
+  console.error(`[AI][${endpoint}] Error`, {
+    ...getAiRequestSnapshot(req),
+    error: normalizedError.message,
+    stack: normalizedError.stack
+  });
+
+  return res.status(500).json({
+    success: false,
+    message: normalizedError.message,
+    stack: env.nodeEnv === "development" ? normalizedError.stack : undefined
+  });
+}
+
+function withAiErrorHandling(
+  endpoint: string,
+  handler: (req: Request, res: Response) => Promise<unknown>
+) {
+  return asyncHandler(async (req, res) => {
+    logAiRequest(endpoint, req);
+
+    try {
+      return await handler(req, res);
+    } catch (error) {
+      return sendAiError(res, req, endpoint, error);
+    }
+  });
+}
+
 function serializeContact(contact: Record<string, unknown> | null | undefined) {
   if (!contact) return null;
   return {
@@ -134,7 +187,18 @@ async function storeInsight(params: {
   sentToEmail?: string;
   emailStatus?: "not_sent" | "sent" | "failed";
 }) {
-  await AiInsight.create({
+  logMongoStep("storeInsight", "create", {
+    organizationId: params.organizationId,
+    type: params.type,
+    title: params.title,
+    contactId: params.contactId ?? null,
+    companyId: params.companyId ?? null,
+    dealId: params.dealId ?? null,
+    sentToEmail: params.sentToEmail ?? "",
+    emailStatus: params.emailStatus ?? "not_sent"
+  });
+
+  const insight = await AiInsight.create({
     organizationId: params.organizationId,
     type: params.type,
     title: params.title,
@@ -145,7 +209,12 @@ async function storeInsight(params: {
     relatedDealId: params.dealId ?? null,
     sentToEmail: params.sentToEmail ?? "",
     emailStatus: params.emailStatus ?? "not_sent",
-    model: env.grokModel
+    model: env.groqModel
+  });
+
+  logMongoStep("storeInsight", "created", {
+    insightId: String(insight._id),
+    type: params.type
   });
 }
 
@@ -197,9 +266,11 @@ async function resolveCompanyTarget(
 }
 
 async function gatherDealContext(organizationId: string, dealId: string) {
+  logMongoStep("gatherDealContext", "loadDeal", { organizationId, dealId });
   const deal = await Deal.findOne({ _id: dealId, organizationId }).lean();
 
   if (!deal) {
+    logMongoStep("gatherDealContext", "dealMissing", { organizationId, dealId });
     return null;
   }
 
@@ -211,9 +282,17 @@ async function gatherDealContext(organizationId: string, dealId: string) {
       $or: [{ dealId }, { contactId: deal.contactId ?? null }, { companyId: deal.companyId ?? null }]
     })
       .sort({ createdAt: -1 })
-      .limit(12)
-      .lean()
+    .limit(12)
+    .lean()
   ]);
+
+  logMongoStep("gatherDealContext", "loaded", {
+    organizationId,
+    dealId,
+    hasContact: Boolean(contact),
+    hasCompany: Boolean(company),
+    activityCount: activities.length
+  });
 
   return {
     deal,
@@ -244,16 +323,20 @@ function renderDigestHtml(result: WeeklyDigestResult) {
   `;
 }
 
-export const listAiInsights = asyncHandler(async (req, res) => {
+export const listAiInsights = withAiErrorHandling("listAiInsights", async (req, res) => {
   if (!req.organization) {
     return sendResponse(res, 400, "Organization context is missing.", {});
   }
+
+  logMongoStep("listAiInsights", "queryInsights", {
+    organizationId: req.organization.id
+  });
 
   const insights = await AiInsight.find({ organizationId: req.organization.id }).sort({ createdAt: -1 }).limit(20).lean();
   return sendResponse(res, 200, "AI insights loaded successfully.", { insights });
 });
 
-export const enrichContactOrCompany = asyncHandler(async (req, res) => {
+export const enrichContactOrCompany = withAiErrorHandling("enrichContactOrCompany", async (req, res) => {
   if (!req.organization) {
     return sendResponse(res, 400, "Organization context is missing.", {});
   }
@@ -271,6 +354,19 @@ export const enrichContactOrCompany = asyncHandler(async (req, res) => {
     website?: string;
     emailDomain?: string;
   };
+
+  if (!companyId && !contactId && !companyName && !website && !emailDomain) {
+    return sendResponse(
+      res,
+      400,
+      "Provide at least one of companyId, contactId, companyName, website, or emailDomain.",
+      {}
+    );
+  }
+
+  logAiRequest("enrichContactOrCompany", req, {
+    resolvedInput: { companyId, contactId, companyName, website, emailDomain }
+  });
 
   const contact =
     contactId && Types.ObjectId.isValid(contactId)
@@ -329,11 +425,14 @@ Return JSON with this shape:
     companyName: companyContext?.name ?? companyName ?? "",
     website: companyContext?.website ?? website ?? "",
     emailDomain: emailDomain ?? buildDomainFromWebsite(website ?? companyContext?.website ?? ""),
-    model: env.grokModel,
+    model: env.groqModel,
     generatedAt: new Date().toISOString()
   };
 
   if (targetCompany) {
+    logMongoStep("enrichContactOrCompany", "updateCompany", {
+      companyId: String(targetCompany._id)
+    });
     await Company.findByIdAndUpdate(targetCompany._id, {
       $set: {
         aiEnrichment: enrichmentPayload,
@@ -346,6 +445,9 @@ Return JSON with this shape:
   }
 
   if (contact) {
+    logMongoStep("enrichContactOrCompany", "updateContact", {
+      contactId: String(contact._id)
+    });
     contact.aiEnrichment = enrichmentPayload;
     await contact.save();
   }
@@ -367,7 +469,7 @@ Return JSON with this shape:
   });
 });
 
-export const writeAiEmail = asyncHandler(async (req, res) => {
+export const writeAiEmail = withAiErrorHandling("writeAiEmail", async (req, res) => {
   if (!req.organization) {
     return sendResponse(res, 400, "Organization context is missing.", {});
   }
@@ -388,6 +490,14 @@ export const writeAiEmail = asyncHandler(async (req, res) => {
       : Promise.resolve(null),
     dealId && Types.ObjectId.isValid(dealId) ? gatherDealContext(req.organization.id, dealId) : Promise.resolve(null)
   ]);
+
+  logAiRequest("writeAiEmail", req, {
+    resolvedInput: {
+      contactFound: Boolean(contact),
+      companyFound: Boolean(company),
+      dealFound: Boolean(dealContext)
+    }
+  });
 
   if (contactId && !contact) {
     return sendResponse(res, 404, "Contact not found in this organization.", {});
@@ -439,7 +549,7 @@ Return JSON with this shape:
   return sendResponse(res, 200, "Email draft generated successfully.", { draft });
 });
 
-export const scoreDealWithAi = asyncHandler(async (req, res) => {
+export const scoreDealWithAi = withAiErrorHandling("scoreDealWithAi", async (req, res) => {
   if (!req.organization) {
     return sendResponse(res, 400, "Organization context is missing.", {});
   }
@@ -491,9 +601,12 @@ Return JSON with this shape:
     return sendResponse(res, 404, "Deal not found in this organization.", {});
   }
 
+  logMongoStep("scoreDealWithAi", "updateDealAiScore", {
+    dealId: String(deal._id)
+  });
   deal.aiScore = {
     ...aiScore,
-    model: env.grokModel,
+    model: env.groqModel,
     generatedAt: new Date().toISOString()
   };
   await deal.save();
@@ -512,7 +625,7 @@ Return JSON with this shape:
   return sendResponse(res, 200, "Deal scored successfully.", { aiScore: deal.aiScore, deal });
 });
 
-export const generateMeetingBrief = asyncHandler(async (req, res) => {
+export const generateMeetingBrief = withAiErrorHandling("generateMeetingBrief", async (req, res) => {
   if (!req.organization) {
     return sendResponse(res, 400, "Organization context is missing.", {});
   }
@@ -583,7 +696,7 @@ Return JSON with this shape:
   return sendResponse(res, 200, "Meeting brief generated successfully.", { brief });
 });
 
-export const generateRevenueForecast = asyncHandler(async (req, res) => {
+export const generateRevenueForecast = withAiErrorHandling("generateRevenueForecast", async (req, res) => {
   if (!req.organization) {
     return sendResponse(res, 400, "Organization context is missing.", {});
   }
@@ -637,7 +750,7 @@ Return JSON with this shape:
   return sendResponse(res, 200, "Revenue forecast generated successfully.", { forecast });
 });
 
-export const sendWeeklyDigest = asyncHandler(async (req, res) => {
+export const sendWeeklyDigest = withAiErrorHandling("sendWeeklyDigest", async (req, res) => {
   if (!req.organization) {
     return sendResponse(res, 400, "Organization context is missing.", {});
   }
