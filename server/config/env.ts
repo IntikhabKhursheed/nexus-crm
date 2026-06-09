@@ -15,6 +15,10 @@ export const env = {
   port: Number(process.env.PORT ?? 5000),
   mongoUri: required("MONGODB_URI"),
   clientOrigin: required("CLIENT_ORIGIN", "http://localhost:3000"),
+  clientOrigins: (process.env.CLIENT_ORIGINS ?? process.env.CLIENT_ORIGIN ?? "http://localhost:3000")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean),
   groqApiKey: process.env.GROQ_API_KEY ?? process.env.GROK_API ?? process.env.GROK_API_KEY ?? process.env.XAI_API_KEY ?? "",
   groqBaseUrl: process.env.GROQ_BASE_URL ?? process.env.GROK_BASE_URL ?? "https://api.groq.com/openai/v1",
   groqModel: process.env.GROQ_MODEL ?? process.env.GROK_MODEL ?? "llama-3.3-70b-versatile",
