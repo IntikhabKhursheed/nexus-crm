@@ -1,0 +1,104 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { WorkspaceShell } from "@/components/workspace-shell";
+import {
+  getUnreadNotificationCount,
+  listNotifications,
+  markAllNotificationsRead,
+  markNotificationRead,
+  type NotificationRecord
+} from "@/lib/notifications";
+
+export default function NotificationsPage() {
+  const [notifications, setNotifications] = useState<NotificationRecord[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  async function loadData() {
+    setLoading(true);
+    setError("");
+    try {
+      const [notificationsResponse, unreadResponse] = await Promise.all([
+        listNotifications(),
+        getUnreadNotificationCount()
+      ]);
+      setNotifications(notificationsResponse.notifications);
+      setUnreadCount(unreadResponse.unreadCount);
+    } catch (loadError) {
+      setError(loadError instanceof Error ? loadError.message : "Unable to load notifications.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    void loadData();
+  }, []);
+
+  async function handleMarkRead(notificationId: string) {
+    try {
+      await markNotificationRead(notificationId);
+      await loadData();
+    } catch {
+      // Ignore mark-read failures for now.
+    }
+  }
+
+  async function handleMarkAllRead() {
+    try {
+      await markAllNotificationsRead();
+      await loadData();
+    } catch {
+      // Ignore bulk mark-read failures for now.
+    }
+  }
+
+  return (
+    <WorkspaceShell>
+      <div className="space-y-6">
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Notifications</p>
+            <h2 className="mt-2 text-3xl font-semibold">Notification history</h2>
+          </div>
+          <button onClick={() => void handleMarkAllRead()} className="rounded-2xl border border-border bg-card px-4 py-2 text-sm font-semibold">
+            Mark all read
+          </button>
+        </div>
+
+        <p className="text-sm text-slate-500">Unread count: {unreadCount}</p>
+        {error && <p className="text-sm text-red-500">{error}</p>}
+
+        <div className="space-y-3">
+          {loading ? (
+            <p className="text-sm text-slate-500">Loading notifications...</p>
+          ) : (
+            notifications.map((notification) => (
+              <button
+                key={notification._id}
+                type="button"
+                onClick={() => void handleMarkRead(notification._id)}
+                className={`block w-full rounded-3xl border p-4 text-left transition ${
+                  notification.isRead ? "border-border bg-card" : "border-slate-400/40 bg-muted"
+                }`}
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="font-semibold">{notification.title}</p>
+                    <p className="mt-1 text-sm text-slate-500">{notification.message}</p>
+                  </div>
+                  <span className="text-xs uppercase tracking-[0.2em] text-slate-500">
+                    {new Date(notification.createdAt).toLocaleString()}
+                  </span>
+                </div>
+              </button>
+            ))
+          )}
+          {!loading && notifications.length === 0 && <p className="text-sm text-slate-500">No notifications yet.</p>}
+        </div>
+      </div>
+    </WorkspaceShell>
+  );
+}
