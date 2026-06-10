@@ -1,11 +1,11 @@
 import { env } from "../config/env.js";
 
-type GrokMessage = {
+type GroqMessage = {
   role: "system" | "user" | "assistant";
   content: string;
 };
 
-type GrokChatResponse = {
+type GroqChatResponse = {
   choices?: Array<{
     message?: {
       content?: string;
@@ -37,30 +37,14 @@ function extractJson(content: string) {
       return JSON.parse(sliced);
     }
 
-    throw new Error("Grok returned content that could not be parsed as JSON.");
+    throw new Error("Groq returned content that could not be parsed as JSON.");
   }
 }
 
-async function postToGrok(messages: GrokMessage[]) {
+async function postToGroq(messages: GroqMessage[]) {
   if (!env.groqApiKey) {
-    throw new Error("Groq API key is missing. Set GROQ_API_KEY (or the legacy GROK_API / GROK_API_KEY / XAI_API_KEY aliases).");
+    throw new Error("Groq API key is missing. Set GROQ_API_KEY in server/.env.");
   }
-
-  const requestBody = {
-    model: env.groqModel,
-    messages,
-    stream: false
-  };
-
-  console.info("[AI][Groq] Request", {
-    baseUrl: env.groqBaseUrl,
-    model: env.groqModel,
-    messageCount: messages.length,
-    messages: messages.map((message) => ({
-      role: message.role,
-      contentPreview: message.content.slice(0, 400)
-    }))
-  });
 
   const response = await fetch(`${env.groqBaseUrl}/chat/completions`, {
     method: "POST",
@@ -68,23 +52,21 @@ async function postToGrok(messages: GrokMessage[]) {
       "Content-Type": "application/json",
       Authorization: `Bearer ${env.groqApiKey}`
     },
-    body: JSON.stringify(requestBody),
+    body: JSON.stringify({
+      model: env.groqModel,
+      messages,
+      stream: false
+    }),
     signal: AbortSignal.timeout(env.aiRequestTimeoutMs)
   });
 
   const responseText = await response.text();
 
-  console.info("[AI][Groq] Response", {
-    ok: response.ok,
-    status: response.status,
-    bodyPreview: responseText.slice(0, 500)
-  });
-
   if (!response.ok) {
     throw new Error(`Groq API request failed with status ${response.status}: ${responseText}`);
   }
 
-  const data = JSON.parse(responseText) as GrokChatResponse;
+  const data = JSON.parse(responseText) as GroqChatResponse;
   const content = data.choices?.[0]?.message?.content;
 
   if (!content) {
@@ -95,7 +77,7 @@ async function postToGrok(messages: GrokMessage[]) {
 }
 
 async function runJsonPrompt<T>(systemPrompt: string, userPrompt: string): Promise<T> {
-  const content = await postToGrok([
+  const content = await postToGroq([
     {
       role: "system",
       content: `${systemPrompt}\n\nReturn valid JSON only. Do not wrap the response in markdown or extra commentary.`
@@ -130,4 +112,4 @@ export async function generateSalesAnalysis<T>(prompt: string) {
   );
 }
 
-export { postToGrok, extractJson };
+export { postToGroq, extractJson };

@@ -256,7 +256,7 @@ export default function AiPage() {
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.3em] text-slate-500">AI</p>
-            <h2 className="mt-2 text-3xl font-semibold">Grok-powered sales intelligence</h2>
+            <h2 className="mt-2 text-3xl font-semibold">Groq-powered sales intelligence</h2>
             <p className="mt-2 max-w-2xl text-sm text-slate-500">
               Enrich contacts and companies, draft outreach, score deals, generate briefs, forecast revenue, and send weekly digests.
             </p>
@@ -498,7 +498,7 @@ export default function AiPage() {
 
           <SectionCard
             title="Revenue forecasting"
-            description="Ask Grok to predict current and next month revenue from the live pipeline."
+            description="Ask Groq to predict current and next month revenue from the live pipeline."
           >
             <div className="space-y-4">
               <button

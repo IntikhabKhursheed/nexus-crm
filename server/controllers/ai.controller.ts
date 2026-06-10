@@ -8,7 +8,7 @@ import { Deal } from "../models/Deal.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { sendResponse } from "../utils/apiResponse.js";
 import { env } from "../config/env.js";
-import { generateContactEnrichment, generateSalesAnalysis, generateSalesDraft } from "../services/grok.service.js";
+import { generateContactEnrichment, generateSalesAnalysis, generateSalesDraft } from "../services/groq.service.js";
 import { isEmailConfigured, sendEmailMessage } from "../services/email.service.js";
 import { createOrganizationNotifications } from "../services/notification.service.js";
 import { recordAuditLog } from "../services/audit.service.js";

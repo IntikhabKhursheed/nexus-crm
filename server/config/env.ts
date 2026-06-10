@@ -1,6 +1,9 @@
 import dotenv from "dotenv";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-dotenv.config({ path: ".env" });
+const serverRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+dotenv.config({ path: path.join(serverRoot, ".env") });
 
 function required(name: string, devFallback?: string) {
   const value = process.env[name] ?? devFallback;
@@ -19,9 +22,9 @@ export const env = {
     .split(",")
     .map((origin) => origin.trim())
     .filter(Boolean),
-  groqApiKey: process.env.GROQ_API_KEY ?? process.env.GROK_API ?? process.env.GROK_API_KEY ?? process.env.XAI_API_KEY ?? "",
-  groqBaseUrl: process.env.GROQ_BASE_URL ?? process.env.GROK_BASE_URL ?? "https://api.groq.com/openai/v1",
-  groqModel: process.env.GROQ_MODEL ?? process.env.GROK_MODEL ?? "llama-3.3-70b-versatile",
+  groqApiKey: process.env.GROQ_API_KEY ?? "",
+  groqBaseUrl: process.env.GROQ_BASE_URL ?? "https://api.groq.com/openai/v1",
+  groqModel: process.env.GROQ_MODEL ?? "llama-3.3-70b-versatile",
   aiRequestTimeoutMs: Number(process.env.AI_REQUEST_TIMEOUT_MS ?? 60000),
   jwtAccessSecret: required("JWT_ACCESS_SECRET"),
   jwtRefreshSecret: required("JWT_REFRESH_SECRET"),

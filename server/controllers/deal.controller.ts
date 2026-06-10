@@ -62,6 +62,14 @@ export const createDeal = asyncHandler(async (req, res) => {
     return sendResponse(res, 400, "Invalid deal stage.", {});
   }
 
+  if (contactId && !Types.ObjectId.isValid(contactId)) {
+    return sendResponse(res, 400, "Select a contact from the dropdown instead of typing a phone number or name.", {});
+  }
+
+  if (companyId && !Types.ObjectId.isValid(companyId)) {
+    return sendResponse(res, 400, "Select a company from the dropdown instead of typing a name.", {});
+  }
+
   const refs = await resolveDealRefs(req.organization.id, contactId, companyId);
 
   if (contactId && !refs?.contact) {

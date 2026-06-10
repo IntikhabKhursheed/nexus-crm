@@ -54,8 +54,24 @@ api.interceptors.response.use(
           return api(originalRequest as any);
         } catch {
           clearTokens();
+          if (typeof window !== "undefined" && !window.location.pathname.startsWith("/login")) {
+            window.location.href = "/login?session=expired";
+          }
+          return Promise.reject(new Error("Session expired. Please sign in again."));
         }
       }
+
+      if (typeof window !== "undefined" && !window.location.pathname.startsWith("/login")) {
+        window.location.href = "/login?session=expired";
+      }
+      return Promise.reject(new Error("Session expired. Please sign in again."));
+    }
+
+    const serverMessage =
+      typeof error.response?.data?.message === "string" ? error.response.data.message : null;
+
+    if (serverMessage) {
+      return Promise.reject(new Error(serverMessage));
     }
 
     return Promise.reject(error);

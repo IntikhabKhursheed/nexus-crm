@@ -195,9 +195,14 @@ export async function listDeals() {
 
 export async function createDeal(payload: Omit<DealPayload, "value" | "probability"> & { value: string; probability: string }) {
   const response = await api.post(orgPath("/deals"), {
-    ...payload,
+    title: payload.title.trim(),
     value: Number(payload.value),
-    probability: Number(payload.probability)
+    stage: payload.stage,
+    probability: Number(payload.probability),
+    expectedCloseDate: payload.expectedCloseDate || undefined,
+    contactId: payload.contactId?.trim() || undefined,
+    companyId: payload.companyId?.trim() || undefined,
+    notes: payload.notes?.trim() ?? ""
   });
   return response.data.data as { deal: Deal };
 }
