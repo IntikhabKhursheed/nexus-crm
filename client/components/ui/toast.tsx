@@ -58,7 +58,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           <div
             key={toast.id}
             className={[
-              "rounded-3xl border p-4 shadow-[0_20px_60px_rgba(15,23,42,0.18)] backdrop-blur-sm",
+              "rounded-[28px] border p-4 shadow-[0_20px_60px_rgba(15,23,42,0.18)] backdrop-blur-xl",
               toast.type === "success"
                 ? "border-emerald-500/20 bg-emerald-500/10"
                 : toast.type === "error"

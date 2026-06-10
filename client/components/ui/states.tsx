@@ -6,7 +6,7 @@ export function LoadingState({ label = "Loading..." }: { label?: string }) {
   return (
     <Card className="p-8 text-sm text-slate-500">
       <div className="flex items-center gap-3">
-        <span className="h-3 w-3 animate-pulse rounded-full bg-slate-400" />
+        <span className="h-3 w-3 animate-pulse rounded-full bg-cyan-500" />
         <p>{label}</p>
       </div>
     </Card>

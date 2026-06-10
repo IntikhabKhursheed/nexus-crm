@@ -4,7 +4,7 @@ export function Card({ children, className = "" }: { children: ReactNode; classN
   return (
     <div
       className={[
-        "glass-card rounded-3xl border border-border/80 bg-card/90 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.08)]",
+        "surface-shell rounded-[28px] p-5 shadow-shell",
         className
       ].join(" ")}
     >

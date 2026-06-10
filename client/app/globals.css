@@ -3,21 +3,31 @@
 @tailwind utilities;
 
 :root {
-  --background: 247 248 251;
-  --foreground: 17 24 39;
+  --background: 244 247 252;
+  --foreground: 15 23 42;
+  --surface: 247 249 253;
   --card: 255 255 255;
   --border: 226 232 240;
   --muted: 241 245 249;
-  --accent: 15 23 42;
+  --primary: 15 23 42;
+  --secondary: 56 189 248;
+  --accent: 16 185 129;
+  --danger: 239 68 68;
+  color-scheme: light;
 }
 
 .dark {
   --background: 3 7 18;
   --foreground: 248 250 252;
+  --surface: 9 16 31;
   --card: 15 23 42;
   --border: 51 65 85;
   --muted: 30 41 59;
-  --accent: 226 232 240;
+  --primary: 248 250 252;
+  --secondary: 56 189 248;
+  --accent: 52 211 153;
+  --danger: 248 113 113;
+  color-scheme: dark;
 }
 
 html {
@@ -27,17 +37,96 @@ html {
 body {
   @apply bg-background text-foreground antialiased;
   min-height: 100vh;
+  font-feature-settings: "ss01" on, "cv11" on;
+  background-image:
+    radial-gradient(circle at top left, rgb(56 189 248 / 0.16), transparent 26%),
+    radial-gradient(circle at top right, rgb(16 185 129 / 0.13), transparent 24%),
+    radial-gradient(circle at bottom center, rgb(15 23 42 / 0.06), transparent 32%);
+  background-attachment: fixed;
 }
 
-.glass-card {
-  background: rgb(var(--card) / 0.78);
-  border: 1px solid rgb(var(--border) / 0.8);
-  backdrop-filter: blur(18px);
+::selection {
+  background: rgb(var(--secondary) / 0.28);
+}
+
+* {
+  border-color: rgb(var(--border) / 1);
+}
+
+a,
+button,
+input,
+select,
+textarea {
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    opacity 160ms ease;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(var(--secondary) / 0.24);
+}
+
+body::-webkit-scrollbar {
+  width: 12px;
+}
+
+body::-webkit-scrollbar-track {
+  background: rgb(var(--background));
+}
+
+body::-webkit-scrollbar-thumb {
+  border: 3px solid rgb(var(--background));
+  border-radius: 9999px;
+  background: rgb(var(--border));
 }
 
 .grid-bg {
-  background-image:
-    radial-gradient(circle at top left, rgb(56 189 248 / 0.18), transparent 28%),
-    radial-gradient(circle at top right, rgb(34 197 94 / 0.14), transparent 30%),
-    linear-gradient(to bottom, rgb(var(--background)), rgb(var(--background)));
+  background:
+    radial-gradient(circle at 18% 20%, rgb(56 189 248 / 0.16), transparent 24%),
+    radial-gradient(circle at 84% 12%, rgb(16 185 129 / 0.14), transparent 22%),
+    linear-gradient(180deg, rgb(var(--background)), rgb(var(--background)));
+}
+
+.surface-shell {
+  background: rgb(var(--surface) / 0.82);
+  border: 1px solid rgb(var(--border) / 0.72);
+  backdrop-filter: blur(18px);
+}
+
+.glass-card {
+  background: rgb(var(--card) / 0.82);
+  border: 1px solid rgb(var(--border) / 0.72);
+  backdrop-filter: blur(18px);
+}
+
+.shadow-shell {
+  box-shadow: 0 24px 80px rgb(15 23 42 / 0.14);
+}
+
+.shadow-glow {
+  box-shadow: 0 24px 80px rgb(15 23 42 / 0.16);
+}
+
+@layer base {
+  input,
+  select,
+  textarea {
+    @apply rounded-2xl border border-border bg-card/95 px-4 py-3 text-sm text-foreground outline-none transition placeholder:text-slate-400;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    @apply border-cyan-400 ring-4 ring-cyan-400/15;
+  }
 }

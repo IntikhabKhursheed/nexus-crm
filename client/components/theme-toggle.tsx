@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getSavedTheme, setSavedTheme } from "@/lib/auth";
+import { MoonIcon, SunIcon } from "./ui/icons";
 
 export function ThemeToggle() {
   const [theme, setTheme] = useState<"dark" | "light">("dark");
@@ -23,18 +24,10 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={toggleTheme}
-      style={{
-        borderRadius: "9999px",
-        border: "1px solid #e2e8f0",
-        background: "#ffffff",
-        padding: "8px 14px",
-        fontSize: "14px",
-        fontWeight: 500,
-        color: "#0f172a",
-        boxShadow: "0 1px 2px rgba(15, 23, 42, 0.04)"
-      }}
+      className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground shadow-[0_10px_30px_rgba(15,23,42,0.06)] hover:-translate-y-0.5 hover:bg-muted"
     >
-      {theme === "dark" ? "Light mode" : "Dark mode"}
+      {theme === "dark" ? <SunIcon className="h-4 w-4" /> : <MoonIcon className="h-4 w-4" />}
+      <span>{theme === "dark" ? "Light mode" : "Dark mode"}</span>
     </button>
   );
 }
