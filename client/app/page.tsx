@@ -1,146 +1,111 @@
 import Link from "next/link";
 import { Nav } from "@/components/nav";
+import { Badge, Panel, StatCard } from "@/components/ui/chrome";
+import { ChartIcon, LayoutIcon, MailIcon, SparklesIcon } from "@/components/ui/icons";
 
 export default function HomePage() {
   return (
-    <main
-      style={{
-        minHeight: "100vh",
-        background:
-          "radial-gradient(circle at top left, rgba(56, 189, 248, 0.2), transparent 28%), radial-gradient(circle at top right, rgba(34, 197, 94, 0.14), transparent 30%), linear-gradient(to bottom, #f7f8fb, #f7f8fb)",
-        color: "#0f172a"
-      }}
-    >
-      <div
-        style={{
-          margin: "0 auto",
-          display: "flex",
-          minHeight: "100vh",
-          width: "100%",
-          maxWidth: "1200px",
-          flexDirection: "column",
-          padding: "24px"
-        }}
-      >
+    <main className="grid-bg min-h-screen">
+      <div className="mx-auto flex min-h-screen w-full max-w-[1500px] flex-col px-4 py-4 sm:px-6 lg:px-8">
         <Nav />
 
-        <section
-          style={{
-            display: "grid",
-            flex: 1,
-            alignItems: "center",
-            gap: "48px",
-            padding: "72px 0",
-            gridTemplateColumns: "1.2fr 0.8fr"
-          }}
-        >
-          <div style={{ display: "grid", gap: "32px" }}>
-            <span
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                width: "fit-content",
-                borderRadius: "9999px",
-                border: "1px solid #e2e8f0",
-                background: "rgba(255,255,255,0.85)",
-                padding: "8px 16px",
-                fontSize: "14px",
-                fontWeight: 500,
-                color: "#64748b",
-                boxShadow: "0 24px 80px rgba(0,0,0,0.14)"
-              }}
-            >
-              Phase 1 foundation is ready
-            </span>
+        <section className="grid flex-1 items-center gap-8 py-10 xl:grid-cols-[1.1fr_0.9fr] xl:py-14">
+          <div className="space-y-8">
+            <div className="flex flex-wrap gap-3">
+              <Badge tone="cyan">Multi-tenant CRM</Badge>
+              <Badge tone="emerald">AI sales workflows</Badge>
+              <Badge tone="amber">Realtime notifications</Badge>
+            </div>
 
-            <div style={{ display: "grid", gap: "16px" }}>
-              <h1
-                style={{
-                  maxWidth: "800px",
-                  margin: 0,
-                  fontSize: "clamp(44px, 6vw, 72px)",
-                  fontWeight: 700,
-                  lineHeight: 1.03,
-                  letterSpacing: "-0.04em"
-                }}
-              >
-                NexusCRM keeps every organization isolated, secure, and ready for AI sales workflows.
+            <div className="max-w-4xl space-y-5">
+              <h1 className="max-w-3xl text-5xl font-semibold tracking-[-0.05em] text-foreground sm:text-6xl xl:text-7xl">
+                A premium workspace for pipeline, AI, reporting, and team operations.
               </h1>
-              <p
-                style={{
-                  maxWidth: "800px",
-                  margin: 0,
-                  fontSize: "18px",
-                  lineHeight: 1.8,
-                  color: "#64748b"
-                }}
-              >
-                Built with Next.js 14, Express, MongoDB, JWT refresh auth, and Stripe billing scaffolding.
-                The app is structured to grow into a production SaaS without rewrites.
+              <p className="max-w-2xl text-lg leading-8 text-slate-500 dark:text-slate-400">
+                NexusCRM gives every organization its own clean, modern operating layer with contacts, companies, deals,
+                campaigns, analytics, and AI assistance all in one beautifully structured interface.
               </p>
             </div>
 
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
+            <div className="flex flex-wrap gap-3">
               <Link
                 href="/register"
-                style={{
-                  borderRadius: "16px",
-                  background: "#0f172a",
-                  padding: "12px 24px",
-                  fontWeight: 700,
-                  color: "#ffffff",
-                  textDecoration: "none"
-                }}
+                className="rounded-full bg-[rgb(var(--primary))] px-6 py-3.5 text-sm font-semibold text-[rgb(var(--background))] shadow-[0_20px_50px_rgba(15,23,42,0.22)] hover:-translate-y-0.5"
               >
-                Create account
+                Create workspace
               </Link>
               <Link
                 href="/login"
-                style={{
-                  borderRadius: "16px",
-                  border: "1px solid #e2e8f0",
-                  background: "#ffffff",
-                  padding: "12px 24px",
-                  fontWeight: 700,
-                  color: "#0f172a",
-                  textDecoration: "none"
-                }}
+                className="rounded-full border border-border bg-card px-6 py-3.5 text-sm font-semibold hover:bg-muted"
               >
                 Sign in
               </Link>
             </div>
-          </div>
 
-          <div
-            style={{
-              borderRadius: "24px",
-              border: "1px solid rgba(226, 232, 240, 0.9)",
-              background: "rgba(255,255,255,0.82)",
-              padding: "24px",
-              boxShadow: "0 0 0 1px rgba(255,255,255,0.08), 0 24px 80px rgba(0,0,0,0.14)",
-              backdropFilter: "blur(18px)"
-            }}
-          >
-            <div style={{ display: "grid", gap: "24px" }}>
-              <div>
-                <p style={{ margin: 0, fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.3em", color: "#64748b" }}>
-                  Foundation
-                </p>
-                <h2 style={{ margin: "8px 0 0", fontSize: "24px", fontWeight: 700 }}>What Phase 1 includes</h2>
-              </div>
-
-              <ul style={{ display: "grid", gap: "16px", fontSize: "14px", lineHeight: 1.7, color: "#64748b", paddingLeft: "20px" }}>
-                <li>Authentication with register, login, and refresh token rotation.</li>
-                <li>Multi-tenant organization membership checks on protected routes.</li>
-                <li>Stripe plan scaffolding for Free, Pro, and Enterprise tiers.</li>
-                <li>Responsive UI foundation with dark and light mode support.</li>
-                <li>Axios interceptor setup for automatic bearer token handling.</li>
-              </ul>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <StatCard label="Tenancy" value="Org scoped" detail="Isolation built into every route and record." accent="cyan" />
+              <StatCard label="Automation" value="AI guided" detail="Draft emails, score deals, forecast revenue." accent="emerald" />
+              <StatCard label="Ops" value="Realtime" detail="Alerts, audit trails, and live workspace activity." accent="amber" />
             </div>
           </div>
+
+          <Panel className="relative overflow-hidden p-0">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.16),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.16),transparent_30%)]" />
+            <div className="relative space-y-5 p-6 sm:p-8">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.38em] text-slate-500 dark:text-slate-400">
+                    Workspace preview
+                  </p>
+                  <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em]">NexusCRM control center</h2>
+                </div>
+                <div className="rounded-full bg-[rgb(var(--secondary)/0.12)] px-3 py-1 text-xs font-semibold text-cyan-700 dark:text-cyan-200">
+                  Live
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="rounded-[24px] border border-border bg-card p-5">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-semibold">AI Hub</p>
+                    <SparklesIcon className="h-4 w-4 text-cyan-500" />
+                  </div>
+                  <p className="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">
+                    Enrichment, email writing, deal scoring, meeting briefs, and weekly digests in one elegant workflow.
+                  </p>
+                </div>
+                <div className="rounded-[24px] border border-border bg-card p-5">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-semibold">Pipeline</p>
+                    <LayoutIcon className="h-4 w-4 text-emerald-500" />
+                  </div>
+                  <p className="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">
+                    Drag deals across stages with clean kanban cards and smooth stage transitions.
+                  </p>
+                </div>
+                <div className="rounded-[24px] border border-border bg-card p-5">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-semibold">Campaigns</p>
+                    <MailIcon className="h-4 w-4 text-amber-500" />
+                  </div>
+                  <p className="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">
+                    Build branded sequences with segment filters, send history, and open tracking.
+                  </p>
+                </div>
+                <div className="rounded-[24px] border border-border bg-card p-5">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-semibold">Analytics</p>
+                    <ChartIcon className="h-4 w-4 text-rose-500" />
+                  </div>
+                  <p className="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">
+                    Modern KPI tiles and chart rails that make the numbers feel crisp and actionable.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Panel>
         </section>
       </div>
     </main>
   );
 }
-
