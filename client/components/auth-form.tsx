@@ -88,7 +88,7 @@ export function AuthForm({ mode }: AuthFormProps) {
       <button
         type="submit"
         disabled={loading}
-        className="w-full rounded-full border border-transparent bg-[rgb(var(--primary))] px-4 py-3 font-semibold text-[rgb(var(--background))] transition hover:-translate-y-0.5 hover:shadow-[0_20px_50px_rgba(15,23,42,0.22)] disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full rounded-[8px] border border-transparent bg-[var(--nx-brand)] px-4 py-3 font-semibold text-white transition hover:bg-[var(--nx-brand-dark)] hover:shadow-[0_20px_50px_rgba(99,102,241,0.22)] disabled:cursor-not-allowed disabled:opacity-60"
       >
         {loading ? "Please wait..." : isRegister ? "Create account" : "Sign in"}
       </button>

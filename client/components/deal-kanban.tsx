@@ -36,10 +36,13 @@ export function DealKanban({ deals, onStageChange }: DealKanbanProps) {
             onDrop={() => {
               void handleDrop(stage);
             }}
-            className="surface-shell w-80 shrink-0 rounded-[28px] p-4 shadow-shell"
+            className="w-80 shrink-0 rounded-[10px] border border-[#e8ecf0] bg-[#f8fafc] p-4"
           >
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-semibold">{stage}</h3>
+              <div className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-[var(--nx-brand)]" />
+                <h3 className="text-[11px] font-bold uppercase tracking-[0.07em] text-[var(--nx-text-secondary)]">{stage}</h3>
+              </div>
               <Badge tone="slate">{dealsByStage[stage].length}</Badge>
             </div>
             <div className="space-y-3">
@@ -48,22 +51,22 @@ export function DealKanban({ deals, onStageChange }: DealKanbanProps) {
                   key={deal._id}
                   draggable
                   onDragStart={() => setDraggedDealId(deal._id)}
-                  className="cursor-grab rounded-[24px] border border-border bg-card p-4 transition hover:-translate-y-0.5 hover:shadow-[0_18px_50px_rgba(15,23,42,0.12)]"
+                  className="cursor-grab rounded-[8px] border border-[#e8ecf0] bg-white p-4 transition hover:border-[#c7d2fe] hover:shadow-[0_18px_50px_rgba(15,23,42,0.08)]"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <h4 className="font-semibold">{deal.title}</h4>
-                      <p className="text-sm text-slate-500">${deal.value.toLocaleString()}</p>
+                      <h4 className="text-[13px] font-bold text-[var(--nx-text-primary)]">{deal.title}</h4>
+                      <p className="text-sm text-[var(--nx-text-muted)]">${deal.value.toLocaleString()}</p>
                     </div>
-                    <span className="rounded-full bg-[rgb(var(--secondary)/0.12)] px-2 py-1 text-xs font-semibold text-cyan-700 dark:text-cyan-200">
+                    <span className="rounded-[6px] bg-[linear-gradient(135deg,#6366f1,#8b5cf6)] px-2 py-1 text-xs font-semibold text-white">
                       {deal.aiScore?.probabilityScore ?? deal.probability}%
                     </span>
                   </div>
-                  <p className="mt-3 text-sm text-slate-500">{deal.notes || "No notes yet."}</p>
+                  <p className="mt-3 text-sm text-[var(--nx-text-muted)]">{deal.notes || "No notes yet."}</p>
                 </article>
               ))}
               {dealsByStage[stage].length === 0 && (
-                <div className="rounded-[24px] border border-dashed border-border p-6 text-center text-sm text-slate-500">
+                <div className="rounded-[8px] border border-dashed border-[#e8ecf0] p-6 text-center text-sm text-[var(--nx-text-muted)]">
                   Drop a deal here
                 </div>
               )}

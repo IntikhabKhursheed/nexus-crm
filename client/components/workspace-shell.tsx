@@ -15,20 +15,31 @@ import {
 } from "@/lib/auth";
 import { NotificationBell } from "./notification-bell";
 import { ThemeToggle } from "./theme-toggle";
-import { ChevronDownIcon, MenuIcon } from "./ui/icons";
+import {
+  BellIcon,
+  BuildingIcon,
+  ChartIcon,
+  ChevronDownIcon,
+  LayoutIcon,
+  MailIcon,
+  SearchIcon,
+  ShieldIcon,
+  SparklesIcon,
+  UsersIcon
+} from "./ui/icons";
 
 const links = [
-  { href: "/contacts", label: "Contacts" },
-  { href: "/companies", label: "Companies" },
-  { href: "/deals", label: "Deal Pipeline" },
-  { href: "/ai", label: "AI Hub" },
-  { href: "/campaigns", label: "Campaigns" },
-  { href: "/reports", label: "Reports" },
-  { href: "/analytics", label: "Analytics" },
-  { href: "/team", label: "Team" },
-  { href: "/settings", label: "Settings" },
-  { href: "/audit-logs", label: "Audit Logs" },
-  { href: "/notifications", label: "Notifications" }
+  { href: "/contacts", label: "Contacts", icon: UsersIcon },
+  { href: "/companies", label: "Companies", icon: BuildingIcon },
+  { href: "/deals", label: "Pipeline Board", icon: LayoutIcon, count: "12" },
+  { href: "/ai", label: "AI Hub", icon: SparklesIcon, badge: "AI" },
+  { href: "/campaigns", label: "Campaigns", icon: MailIcon },
+  { href: "/reports", label: "Reports", icon: ChartIcon },
+  { href: "/analytics", label: "Analytics", icon: ChartIcon },
+  { href: "/team", label: "Team", icon: UsersIcon },
+  { href: "/settings", label: "Settings", icon: ShieldIcon },
+  { href: "/audit-logs", label: "Audit Logs", icon: BellIcon },
+  { href: "/notifications", label: "Notifications", icon: BellIcon }
 ];
 
 function initials(name?: string) {
@@ -43,17 +54,13 @@ function initials(name?: string) {
 
 export function WorkspaceShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const tabsRef = useRef<HTMLDivElement | null>(null);
   const orgMenuRef = useRef<HTMLDivElement | null>(null);
   const accountMenuRef = useRef<HTMLDivElement | null>(null);
   const [activeOrg, setActiveOrg] = useState<StoredMembership | null>(null);
   const [memberships, setMemberships] = useState<StoredMembership[]>([]);
   const [user, setUser] = useState<StoredUser | null>(null);
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [orgOpen, setOrgOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
 
   useEffect(() => {
     setActiveOrg(getActiveOrganization());
@@ -62,7 +69,6 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    setMobileOpen(false);
     setOrgOpen(false);
     setAccountOpen(false);
   }, [pathname]);
@@ -82,28 +88,6 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("mousedown", handlePointerDown);
   }, []);
 
-  useEffect(() => {
-    function updateScrollState() {
-      const container = tabsRef.current;
-      if (!container) return;
-      setCanScrollLeft(container.scrollLeft > 0);
-      setCanScrollRight(container.scrollLeft + container.clientWidth < container.scrollWidth - 1);
-    }
-
-    const container = tabsRef.current;
-    if (!container) return;
-
-    updateScrollState();
-    const resizeObserver = new ResizeObserver(updateScrollState);
-    resizeObserver.observe(container);
-    container.addEventListener("scroll", updateScrollState, { passive: true });
-
-    return () => {
-      resizeObserver.disconnect();
-      container.removeEventListener("scroll", updateScrollState);
-    };
-  }, [links.length]);
-
   function handleOrgChange(nextOrgId: string) {
     setActiveOrganizationId(nextOrgId);
     const nextMembership = memberships.find((membership) => membership.organization.id === nextOrgId) ?? null;
@@ -116,297 +100,232 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
     window.location.href = "/login";
   }
 
-  function scrollTabs(direction: "left" | "right") {
-    const container = tabsRef.current;
-    if (!container) return;
-    const amount = direction === "left" ? -240 : 240;
-    container.scrollBy({ left: amount, behavior: "smooth" });
-  }
-
   const userLabel = useMemo(() => user?.name ?? user?.email ?? "Account", [user]);
   const userRole = activeOrg?.role ?? "Member";
+  const activeTenantName = activeOrg?.organization.name ?? "Codnocrats";
 
   return (
-    <main className="grid-bg min-h-screen">
-      <div className="mx-auto flex min-h-screen w-full max-w-[1600px] flex-col px-4 py-4 sm:px-6 lg:px-8">
-        <header className="sticky top-0 z-40 rounded-2xl border border-border bg-white/95 shadow-[0_1px_3px_rgba(0,0,0,0.06)] backdrop-blur dark:bg-slate-900/95">
-          <div className="flex h-[60px] items-center gap-3 px-3 sm:px-4">
-            <div className="relative flex items-center gap-2" ref={orgMenuRef}>
-              <button
-                type="button"
-                onClick={() => setMobileOpen((current) => !current)}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-600 transition hover:bg-slate-100 lg:hidden dark:text-slate-300 dark:hover:bg-slate-800"
-                aria-expanded={mobileOpen}
-                aria-label="Open navigation menu"
-              >
-                <MenuIcon className="h-5 w-5" />
-              </button>
-
-              <Link href="/contacts" className="flex items-center gap-2.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-[8px] bg-slate-950 text-[13px] font-bold tracking-[0.05em] text-white dark:bg-white dark:text-slate-950">
-                  NX
-                </div>
-              </Link>
-              <button
-                type="button"
-                onClick={() => {
-                  setOrgOpen((current) => !current);
-                  setAccountOpen(false);
-                }}
-                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
-                aria-haspopup="menu"
-                aria-expanded={orgOpen}
-              >
-                <span className="font-medium">Codnocrats</span>
-                <ChevronDownIcon className="h-3.5 w-3.5 text-slate-500" />
-              </button>
-
-              {orgOpen && (
-                <div className="absolute left-0 top-12 z-50 w-72 rounded-[20px] border border-border bg-card p-2 shadow-[0_24px_70px_rgba(15,23,42,0.16)]">
-                  <div className="px-3 pb-2 pt-2">
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Workspaces</p>
-                  </div>
-                  <div className="max-h-72 space-y-1 overflow-y-auto">
-                    {memberships.length === 0 && (
-                      <div className="rounded-xl px-3 py-2 text-sm text-slate-500">No workspaces available.</div>
-                    )}
-                    {memberships.map((membership) => {
-                      const active = activeOrg?.organization.id === membership.organization.id;
-                      return (
-                        <button
-                          key={membership.organization.id}
-                          type="button"
-                          onClick={() => handleOrgChange(membership.organization.id)}
-                          className={[
-                            "flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm transition",
-                            active ? "bg-slate-950 text-white dark:bg-white dark:text-slate-950" : "hover:bg-slate-100 dark:hover:bg-slate-800"
-                          ].join(" ")}
-                        >
-                          <span className="truncate">{membership.organization.name}</span>
-                          <span
-                            className={[
-                              "ml-3 rounded-full px-2 py-0.5 text-[11px] font-semibold",
-                              active
-                                ? "bg-white/15 text-inherit"
-                                : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-300"
-                            ].join(" ")}
-                          >
-                            {membership.role}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
+    <main className="grid h-screen overflow-hidden bg-[var(--nx-page-bg)] md:grid-cols-[220px_minmax(0,1fr)]">
+      <aside className="flex h-screen flex-col overflow-y-auto border-r border-[color:var(--nx-sidebar-border)] bg-[var(--nx-sidebar-bg)] text-[color:var(--nx-sidebar-text)]">
+        <div className="border-b border-[color:var(--nx-sidebar-border)] px-4 py-[18px]">
+          <Link href="/contacts" className="flex items-center gap-3">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] bg-gradient-to-br from-indigo-500 to-violet-500 text-[13px] font-extrabold tracking-[-0.05em] text-white">
+              NX
             </div>
+            <div className="hidden md:block">
+              <p className="text-[15px] font-bold text-[#f1f5f9]">NexusCRM</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--nx-brand)]">B2B AI PLATFORM</p>
+            </div>
+          </Link>
+        </div>
 
-            <div className="relative hidden flex-1 items-center justify-center lg:flex">
-              {canScrollLeft && (
-                <button
-                  type="button"
-                  onClick={() => scrollTabs("left")}
-                  className="absolute left-0 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-white text-sm text-slate-500 shadow-sm transition hover:bg-slate-100 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
-                  aria-label="Scroll tabs left"
-                >
-                  {"<"}
-                </button>
-              )}
+        <div ref={orgMenuRef} className="relative border-b border-[color:var(--nx-sidebar-border)] px-3 py-2">
+          <button
+            type="button"
+            onClick={() => {
+              setOrgOpen((current) => !current);
+              setAccountOpen(false);
+            }}
+            className="flex w-full items-center gap-2 rounded-[8px] border border-white/10 bg-white/5 px-3 py-2 text-left transition hover:bg-white/8"
+            aria-haspopup="menu"
+            aria-expanded={orgOpen}
+          >
+            <span className="h-2 w-2 rounded-full bg-[var(--nx-green)]" />
+            <div className="min-w-0 flex-1 hidden md:block">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.06em] text-[var(--nx-sidebar-section-label)]">
+                Select active tenant
+              </p>
+              <p className="truncate text-[12px] font-semibold text-[#e2e8f0]">{activeTenantName}</p>
+            </div>
+            <ChevronDownIcon className="h-3 w-3 shrink-0 text-[var(--nx-sidebar-icon)]" />
+          </button>
 
-              <div
-                ref={tabsRef}
-                className="flex w-full items-center gap-1 overflow-x-auto px-10 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-              >
-                {links.map((link) => {
-                  const active = pathname === link.href || pathname.startsWith(`${link.href}/`);
+          {orgOpen && (
+            <div className="absolute left-3 top-[72px] z-40 w-[calc(100%-1.5rem)] rounded-[10px] border border-white/10 bg-[#111827] p-2 shadow-[0_24px_70px_rgba(15,23,42,0.35)]">
+              <div className="px-2 py-1">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--nx-sidebar-section-label)]">
+                  Workspaces
+                </p>
+              </div>
+              <div className="max-h-72 space-y-1 overflow-y-auto">
+                {memberships.length === 0 && (
+                  <div className="rounded-[8px] px-3 py-2 text-sm text-slate-400">No workspaces available.</div>
+                )}
+                {memberships.map((membership) => {
+                  const active = activeOrg?.organization.id === membership.organization.id;
                   return (
-                    <Link
-                      key={link.href}
-                      href={link.href}
+                    <button
+                      key={membership.organization.id}
+                      type="button"
+                      onClick={() => handleOrgChange(membership.organization.id)}
                       className={[
-                        "relative whitespace-nowrap rounded-md px-3 py-2 text-[13.5px] font-normal transition",
-                        active
-                          ? "font-semibold text-slate-900 after:absolute after:inset-x-3 after:-bottom-0.5 after:h-0.5 after:rounded-full after:bg-slate-900 dark:text-white dark:after:bg-white"
-                          : "text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+                        "flex w-full items-center justify-between rounded-[8px] px-3 py-2 text-left text-sm transition",
+                        active ? "border border-[rgba(99,102,241,0.35)] bg-[rgba(99,102,241,0.18)] text-[#e2e8f0]" : "text-slate-300 hover:bg-white/5"
                       ].join(" ")}
                     >
-                      {link.label}
-                    </Link>
+                      <span className="truncate">{membership.organization.name}</span>
+                      <span className={["ml-3 rounded-lg px-2 py-0.5 text-[11px] font-semibold", active ? "bg-white/10" : "bg-slate-800 text-slate-400"].join(" ")}>
+                        {membership.role}
+                      </span>
+                    </button>
                   );
                 })}
               </div>
-
-              {canScrollRight && (
-                <button
-                  type="button"
-                  onClick={() => scrollTabs("right")}
-                  className="absolute right-0 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-white text-sm text-slate-500 shadow-sm transition hover:bg-slate-100 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
-                  aria-label="Scroll tabs right"
-                >
-                  {">"}
-                </button>
-              )}
             </div>
+          )}
+        </div>
 
-            <div className="ml-auto flex items-center gap-2">
-              <NotificationBell organizationId={activeOrg?.organization.id ?? ""} compact />
-              <ThemeToggle compact />
-
-              <div className="h-5 w-px bg-slate-200 dark:bg-slate-700" />
-
-              <div ref={accountMenuRef} className="relative">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setAccountOpen((current) => !current);
-                    setOrgOpen(false);
-                  }}
-                  className="flex items-center gap-2 rounded-full px-2 py-1.5 text-left transition hover:bg-slate-100 dark:hover:bg-slate-800"
-                  aria-haspopup="menu"
-                  aria-expanded={accountOpen}
+        <nav className="px-3 py-4">
+          <p className="hidden px-2 pb-2 text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--nx-sidebar-section-label)] md:block">
+            Command Center
+          </p>
+          <div className="space-y-1">
+            {links.map((link) => {
+              const active = pathname === link.href || pathname.startsWith(`${link.href}/`);
+              const Icon = link.icon;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={[
+                    "flex items-center gap-2 rounded-[8px] border px-3 py-2 text-[13px] transition",
+                    active
+                      ? "border-[color:var(--nx-sidebar-active-border)] bg-[color:var(--nx-sidebar-active-bg)] text-[color:var(--nx-sidebar-text-active)]"
+                      : "border-transparent text-[color:var(--nx-sidebar-text)] hover:bg-white/5 hover:text-[#e2e8f0]"
+                  ].join(" ")}
                 >
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-950 text-xs font-bold text-white dark:bg-white dark:text-slate-950">
-                    {initials(user?.name)}
-                  </div>
-                  <div className="hidden sm:block">
-                    <p className="text-[13px] font-medium leading-none text-slate-900 dark:text-slate-50">{userLabel}</p>
-                    <p className="mt-1 text-[11px] leading-none text-slate-400">{userRole}</p>
-                  </div>
-                  <ChevronDownIcon className="h-4 w-4 text-slate-400" />
-                </button>
+                  <Icon className={["h-4 w-4 shrink-0", active ? "text-[color:var(--nx-sidebar-icon-active)]" : "text-[color:var(--nx-sidebar-icon)]"].join(" ")} />
+                  <span className="hidden md:block">{link.label}</span>
+                  {link.badge && (
+                    <span className="ml-auto hidden rounded-[4px] bg-[rgba(99,102,241,0.3)] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.04em] text-[#818cf8] md:inline-flex">
+                      {link.badge}
+                    </span>
+                  )}
+                  {link.count && (
+                    <span className="ml-auto hidden rounded-full bg-[var(--nx-brand)] px-2 py-0.5 text-[10px] font-bold text-white md:inline-flex">
+                      {link.count}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+        </nav>
 
-                {accountOpen && (
-                  <div className="absolute right-0 top-12 z-50 w-80 rounded-[20px] border border-border bg-card p-2 shadow-[0_24px_70px_rgba(15,23,42,0.16)]">
-                    <div className="rounded-2xl bg-muted/60 p-4">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-950 text-sm font-bold text-white dark:bg-white dark:text-slate-950">
-                          {initials(user?.name)}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold text-slate-900 dark:text-slate-50">{userLabel}</p>
-                          <p className="truncate text-xs text-slate-500 dark:text-slate-400">{user?.email ?? "Signed in user"}</p>
-                        </div>
-                      </div>
-                      <div className="mt-3 flex items-center gap-2">
-                        <span className="rounded-full bg-slate-950 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white dark:bg-white dark:text-slate-950">
-                          Secure
-                        </span>
-                        <span className="rounded-full bg-cyan-500/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-700 dark:text-cyan-300">
-                          {userRole}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="mt-2 space-y-1">
-                      <Link
-                        href="/notifications"
-                        className="block rounded-xl px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
-                        onClick={() => setAccountOpen(false)}
-                      >
-                        Notifications
-                      </Link>
-                      <Link
-                        href="/settings"
-                        className="block rounded-xl px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
-                        onClick={() => setAccountOpen(false)}
-                      >
-                        Workspace settings
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={handleSignOut}
-                        className="block w-full rounded-xl px-3 py-2 text-left text-sm text-rose-600 transition hover:bg-rose-500/10 dark:text-rose-300"
-                      >
-                        Sign out
-                      </button>
-                    </div>
-                  </div>
-                )}
+        <div className="mt-auto border-t border-[color:var(--nx-sidebar-border)] p-3">
+          <div className="rounded-[8px] border border-[rgba(16,185,129,0.15)] bg-[rgba(16,185,129,0.08)] px-3 py-2">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-[var(--nx-green)]" />
+              <div className="hidden md:block">
+                <p className="text-[11px] font-bold uppercase tracking-[0.04em] text-[var(--nx-green)]">Data Isolation Safe</p>
+                <p className="text-[10px] text-slate-500">Enterprise Tier Protocol</p>
               </div>
             </div>
           </div>
+        </div>
+      </aside>
 
-          {mobileOpen && (
-            <div className="border-t border-border px-3 pb-3 pt-2 lg:hidden">
-              <div className="grid gap-1">
-                {links.map((link) => {
-                  const active = pathname === link.href || pathname.startsWith(`${link.href}/`);
-                  return (
+      <div className="flex min-w-0 flex-col overflow-hidden">
+        <header className="flex h-[52px] items-center gap-3 border-b border-[color:var(--nx-topbar-border)] bg-[var(--nx-topbar-bg)] px-5" style={{ boxShadow: "var(--nx-topbar-shadow)" }}>
+          <div className="min-w-0">
+            <p className="text-[12px] text-[var(--nx-text-muted)]">
+              Sandbox Pipeline Profile: <span className="font-semibold text-[var(--nx-brand)]">{activeTenantName}</span>
+            </p>
+          </div>
+
+          <div className="mx-4 hidden h-8 max-w-[380px] flex-1 items-center gap-2 rounded-[8px] border border-[#e2e8f0] bg-[#f8fafc] px-3 md:flex">
+            <SearchIcon className="h-3.5 w-3.5 text-[var(--nx-text-muted)]" />
+            <input
+              type="text"
+              placeholder="Search contacts, companies, deals..."
+              className="min-w-0 flex-1 border-0 bg-transparent p-0 text-[13px] text-[var(--nx-text-secondary)] placeholder:text-[var(--nx-text-placeholder)] focus:ring-0"
+            />
+            <span className="rounded-[4px] border border-[#e2e8f0] bg-[#f1f5f9] px-1.5 py-0.5 font-mono text-[10px] text-[var(--nx-text-muted)]">
+              ⌘K
+            </span>
+          </div>
+
+          <div className="ml-auto flex items-center gap-2">
+            <NotificationBell organizationId={activeOrg?.organization.id ?? ""} compact />
+            <ThemeToggle compact />
+
+            <div className="h-5 w-px bg-[#e8ecf0]" />
+
+            <div ref={accountMenuRef} className="relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setAccountOpen((current) => !current);
+                  setOrgOpen(false);
+                }}
+                className="flex items-center gap-2 rounded-[8px] border border-[#e8ecf0] bg-white px-1.5 py-1 transition hover:bg-[#f8fafc]"
+                aria-haspopup="menu"
+                aria-expanded={accountOpen}
+              >
+                <div className="flex h-[26px] w-[26px] items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 text-[10px] font-bold text-white">
+                  {initials(user?.name)}
+                </div>
+                <div className="hidden sm:block">
+                  <p className="text-[12.5px] font-semibold leading-none text-[#1e293b]">{userLabel}</p>
+                  <p className="mt-1 text-[10px] leading-none text-[var(--nx-text-muted)]">{userRole}</p>
+                </div>
+                <ChevronDownIcon className="h-3 w-3 text-[#94a3b8]" />
+              </button>
+
+              {accountOpen && (
+                <div className="absolute right-0 top-12 z-50 w-80 rounded-[10px] border border-[#e8ecf0] bg-white p-2 shadow-[0_24px_70px_rgba(15,23,42,0.16)]">
+                  <div className="rounded-[10px] bg-[#f8fafc] p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 text-sm font-bold text-white">
+                        {initials(user?.name)}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-[var(--nx-text-primary)]">{userLabel}</p>
+                        <p className="truncate text-xs text-[var(--nx-text-muted)]">{user?.email ?? "Signed in user"}</p>
+                      </div>
+                    </div>
+                    <div className="mt-3 flex items-center gap-2">
+                      <span className="rounded-[4px] bg-[var(--nx-brand)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white">
+                        Secure
+                      </span>
+                      <span className="rounded-[4px] bg-[var(--nx-brand-light)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--nx-brand-text)]">
+                        {userRole}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="mt-2 space-y-1">
                     <Link
-                      key={link.href}
-                      href={link.href}
-                      onClick={() => setMobileOpen(false)}
-                      className={[
-                        "rounded-xl px-3 py-2 text-sm transition",
-                        active
-                          ? "bg-slate-950 text-white dark:bg-white dark:text-slate-950"
-                          : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
-                      ].join(" ")}
+                      href="/notifications"
+                      className="block rounded-[8px] px-3 py-2 text-sm text-[var(--nx-text-secondary)] transition hover:bg-[#f8fafc]"
+                      onClick={() => setAccountOpen(false)}
                     >
-                      {link.label}
+                      Notifications
                     </Link>
-                  );
-                })}
-              </div>
-
-              <div className="mt-3 flex items-center justify-between rounded-2xl border border-border bg-card px-3 py-2">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Workspace</p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setOrgOpen((current) => !current);
-                      setAccountOpen(false);
-                    }}
-                    className="mt-1 inline-flex items-center gap-1 text-sm font-medium text-slate-800 dark:text-slate-100"
-                  >
-                    Codnocrats
-                    <ChevronDownIcon className="h-3.5 w-3.5 text-slate-500" />
-                  </button>
-                </div>
-                <div className="flex items-center gap-2">
-                  <NotificationBell organizationId={activeOrg?.organization.id ?? ""} compact />
-                  <ThemeToggle compact />
-                </div>
-              </div>
-
-              {orgOpen && (
-                <div className="mt-2 rounded-2xl border border-border bg-card p-2 shadow-[0_24px_70px_rgba(15,23,42,0.12)]">
-                  <div className="max-h-64 space-y-1 overflow-y-auto">
-                    {memberships.map((membership) => {
-                      const active = activeOrg?.organization.id === membership.organization.id;
-                      return (
-                        <button
-                          key={membership.organization.id}
-                          type="button"
-                          onClick={() => handleOrgChange(membership.organization.id)}
-                          className={[
-                            "flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm transition",
-                            active ? "bg-slate-950 text-white dark:bg-white dark:text-slate-950" : "hover:bg-slate-100 dark:hover:bg-slate-800"
-                          ].join(" ")}
-                        >
-                          <span className="truncate">{membership.organization.name}</span>
-                          <span
-                            className={[
-                              "ml-3 rounded-full px-2 py-0.5 text-[11px] font-semibold",
-                              active
-                                ? "bg-white/15 text-inherit"
-                                : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-300"
-                            ].join(" ")}
-                          >
-                            {membership.role}
-                          </span>
-                        </button>
-                      );
-                    })}
+                    <Link
+                      href="/settings"
+                      className="block rounded-[8px] px-3 py-2 text-sm text-[var(--nx-text-secondary)] transition hover:bg-[#f8fafc]"
+                      onClick={() => setAccountOpen(false)}
+                    >
+                      Workspace settings
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={handleSignOut}
+                      className="block w-full rounded-[8px] px-3 py-2 text-left text-sm text-red-600 transition hover:bg-red-500/10"
+                    >
+                      Sign out
+                    </button>
                   </div>
                 </div>
               )}
             </div>
-          )}
+          </div>
         </header>
 
-        <section className="flex-1 py-6">{children}</section>
+        <section className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-6 lg:px-8">
+          <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-6">{children}</div>
+        </section>
       </div>
     </main>
   );

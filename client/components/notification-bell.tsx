@@ -81,17 +81,17 @@ export function NotificationBell({ organizationId, compact = false }: Notificati
         aria-label={compact ? "Open notifications" : "Open notifications"}
         className={
           compact
-            ? "relative inline-flex h-10 w-10 items-center justify-center rounded-full text-foreground transition hover:bg-muted"
-            : "relative inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground shadow-[0_10px_30px_rgba(15,23,42,0.06)] hover:-translate-y-0.5 hover:bg-muted"
+            ? "relative inline-flex h-8 w-8 items-center justify-center rounded-[8px] border border-[#e8ecf0] bg-white text-[rgb(var(--foreground))] transition hover:bg-[#f8fafc]"
+            : "relative inline-flex items-center gap-2 rounded-[8px] border border-[#e8ecf0] bg-white px-4 py-2 text-sm font-semibold text-[rgb(var(--foreground))] shadow-[0_10px_30px_rgba(15,23,42,0.06)] hover:bg-[#f8fafc]"
         }
       >
         <BellIcon className="h-4 w-4" />
         {!compact && "Alerts"}
         {unreadCount > 0 && (
           compact ? (
-            <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-rose-500 ring-2 ring-background" />
+            <span className="absolute right-0 top-0 h-3.5 w-3.5 rounded-full border-2 border-white bg-[#ef4444]" />
           ) : (
-            <span className="absolute -right-1 -top-1 rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-semibold text-white shadow-lg">
+            <span className="absolute -right-1 -top-1 rounded-full bg-[#ef4444] px-2 py-0.5 text-[10px] font-semibold text-white shadow-lg">
               {unreadCount}
             </span>
           )
@@ -99,7 +99,7 @@ export function NotificationBell({ organizationId, compact = false }: Notificati
       </button>
 
       {open && (
-        <div className="absolute right-0 top-12 z-40 w-96 rounded-[28px] border border-border bg-card p-4 shadow-[0_28px_80px_rgba(15,23,42,0.18)]">
+        <div className="absolute right-0 top-12 z-40 w-96 rounded-[10px] border border-[#e8ecf0] bg-white p-4 shadow-[0_28px_80px_rgba(15,23,42,0.18)]">
           <div className="mb-3 flex items-center justify-between">
             <h3 className="font-semibold">Notifications</h3>
             <button type="button" onClick={() => void handleMarkAllRead()} className="text-xs underline">
@@ -114,17 +114,17 @@ export function NotificationBell({ organizationId, compact = false }: Notificati
                 type="button"
                 onClick={() => void handleMarkRead(notification._id)}
                 className={`block w-full rounded-2xl border px-4 py-3 text-left transition hover:-translate-y-0.5 ${
-                  notification.isRead ? "border-border bg-background" : "border-slate-400/40 bg-muted"
+                  notification.isRead ? "border-[#e8ecf0] bg-white" : "border-[#c7d2fe] bg-[#f8fafc]"
                 }`}
               >
                 <p className="text-sm font-semibold">{notification.title}</p>
-                <p className="mt-1 text-xs text-slate-500">{notification.message}</p>
-                <p className="mt-2 text-[11px] uppercase tracking-[0.2em] text-slate-500">
+                <p className="mt-1 text-xs text-[var(--nx-text-muted)]">{notification.message}</p>
+                <p className="mt-2 text-[11px] uppercase tracking-[0.2em] text-[var(--nx-text-muted)]">
                   {new Date(notification.createdAt).toLocaleString()}
                 </p>
               </button>
             ))}
-            {notifications.length === 0 && <p className="text-sm text-slate-500">No notifications yet.</p>}
+            {notifications.length === 0 && <p className="text-sm text-[var(--nx-text-muted)]">No notifications yet.</p>}
           </div>
 
           <div className="mt-4 flex items-center justify-between">
