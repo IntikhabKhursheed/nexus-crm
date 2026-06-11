@@ -3,6 +3,8 @@
 import type { FormEvent } from "react";
 import { useEffect, useState } from "react";
 import type { CompanyPayload } from "@/lib/crm";
+import { Button } from "./ui/button";
+import { Input, Textarea } from "./ui/input";
 
 type CompanyFormProps = {
   initialValues?: CompanyPayload;
@@ -47,51 +49,41 @@ export function CompanyForm({ initialValues, submitLabel, onSubmit }: CompanyFor
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2">
-        <input
-          className="w-full rounded-2xl border border-border bg-card px-4 py-3 outline-none transition focus:border-slate-400"
+        <Input
           placeholder="Company name"
           value={form.name}
           onChange={(event) => setForm({ ...form, name: event.target.value })}
         />
-        <input
-          className="w-full rounded-2xl border border-border bg-card px-4 py-3 outline-none transition focus:border-slate-400"
+        <Input
           placeholder="Website"
           value={form.website}
           onChange={(event) => setForm({ ...form, website: event.target.value })}
         />
-        <input
-          className="w-full rounded-2xl border border-border bg-card px-4 py-3 outline-none transition focus:border-slate-400"
+        <Input
           placeholder="Industry"
           value={form.industry}
           onChange={(event) => setForm({ ...form, industry: event.target.value })}
         />
-        <input
-          className="w-full rounded-2xl border border-border bg-card px-4 py-3 outline-none transition focus:border-slate-400"
+        <Input
           placeholder="Size"
           value={form.size}
           onChange={(event) => setForm({ ...form, size: event.target.value })}
         />
       </div>
-      <input
-        className="w-full rounded-2xl border border-border bg-card px-4 py-3 outline-none transition focus:border-slate-400"
+      <Input
         placeholder="Location"
         value={form.location}
         onChange={(event) => setForm({ ...form, location: event.target.value })}
       />
-      <textarea
-        className="min-h-32 w-full rounded-2xl border border-border bg-card px-4 py-3 outline-none transition focus:border-slate-400"
+      <Textarea
         placeholder="Notes"
         value={form.notes}
         onChange={(event) => setForm({ ...form, notes: event.target.value })}
       />
       {error && <p className="text-sm text-red-500">{error}</p>}
-      <button
-        type="submit"
-        disabled={loading}
-        className="rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white transition hover:opacity-90 disabled:opacity-60 dark:bg-slate-100 dark:text-slate-950"
-      >
+      <Button type="submit" disabled={loading}>
         {loading ? "Saving..." : submitLabel}
-      </button>
+      </Button>
     </form>
   );
 }

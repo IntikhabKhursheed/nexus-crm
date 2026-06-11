@@ -3,6 +3,8 @@
 import type { FormEvent } from "react";
 import { useState } from "react";
 import type { ActivityPayload } from "@/lib/crm";
+import { Button } from "./ui/button";
+import { Input, Textarea } from "./ui/input";
 
 type ActivityFormProps = {
   onSubmit: (payload: ActivityPayload) => Promise<void>;
@@ -51,7 +53,7 @@ export function ActivityForm({ onSubmit, defaultContactId = "", hideContactId = 
         <select
           value={form.type}
           onChange={(event) => setForm({ ...form, type: event.target.value as ActivityPayload["type"] })}
-          className="w-full rounded-2xl border border-border bg-card px-4 py-3 outline-none"
+          className="w-full rounded-2xl border border-border bg-card/95 px-4 py-3 outline-none"
         >
           <option value="note">Note</option>
           <option value="email">Email</option>
@@ -59,28 +61,24 @@ export function ActivityForm({ onSubmit, defaultContactId = "", hideContactId = 
           <option value="meeting">Meeting</option>
           <option value="WhatsApp">WhatsApp</option>
         </select>
-        <input
-          className="w-full rounded-2xl border border-border bg-card px-4 py-3 outline-none transition focus:border-slate-400"
+        <Input
           placeholder="Title"
           value={form.title}
           onChange={(event) => setForm({ ...form, title: event.target.value })}
         />
       </div>
-      <textarea
-        className="min-h-28 w-full rounded-2xl border border-border bg-card px-4 py-3 outline-none transition focus:border-slate-400"
+      <Textarea
         placeholder="Activity notes"
         value={form.notes}
         onChange={(event) => setForm({ ...form, notes: event.target.value })}
       />
       <div className="grid gap-4 md:grid-cols-3">
-        <input
-          className="w-full rounded-2xl border border-border bg-card px-4 py-3 outline-none transition focus:border-slate-400"
+        <Input
           placeholder="Company ID"
           value={form.companyId}
           onChange={(event) => setForm({ ...form, companyId: event.target.value })}
         />
-        <input
-          className="w-full rounded-2xl border border-border bg-card px-4 py-3 outline-none transition focus:border-slate-400"
+        <Input
           placeholder="Deal ID"
           value={form.dealId}
           onChange={(event) => setForm({ ...form, dealId: event.target.value })}
@@ -88,8 +86,7 @@ export function ActivityForm({ onSubmit, defaultContactId = "", hideContactId = 
         {hideContactId ? (
           <input type="hidden" value={form.contactId} readOnly />
         ) : (
-          <input
-            className="w-full rounded-2xl border border-border bg-card px-4 py-3 outline-none transition focus:border-slate-400"
+          <Input
             placeholder="Contact ID"
             value={form.contactId}
             onChange={(event) => setForm({ ...form, contactId: event.target.value })}
@@ -97,13 +94,9 @@ export function ActivityForm({ onSubmit, defaultContactId = "", hideContactId = 
         )}
       </div>
       {error && <p className="text-sm text-red-500">{error}</p>}
-      <button
-        type="submit"
-        disabled={loading}
-        className="rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white transition hover:opacity-90 disabled:opacity-60 dark:bg-slate-100 dark:text-slate-950"
-      >
+      <Button type="submit" disabled={loading}>
         {loading ? "Logging..." : "Log activity"}
-      </button>
+      </Button>
     </form>
   );
 }

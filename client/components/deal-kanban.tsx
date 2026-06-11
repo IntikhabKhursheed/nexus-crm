@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { Deal, DealStage } from "@/lib/crm";
 import { dealStages } from "@/lib/crm";
+import { Badge } from "./ui/chrome";
 
 type DealKanbanProps = {
   deals: Deal[];
@@ -35,13 +36,11 @@ export function DealKanban({ deals, onStageChange }: DealKanbanProps) {
             onDrop={() => {
               void handleDrop(stage);
             }}
-            className="glass-card w-80 shrink-0 rounded-3xl p-4"
+            className="surface-shell w-80 shrink-0 rounded-[28px] p-4 shadow-shell"
           >
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-lg font-semibold">{stage}</h3>
-              <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-slate-500">
-                {dealsByStage[stage].length}
-              </span>
+              <Badge tone="slate">{dealsByStage[stage].length}</Badge>
             </div>
             <div className="space-y-3">
               {dealsByStage[stage].map((deal) => (
@@ -49,14 +48,14 @@ export function DealKanban({ deals, onStageChange }: DealKanbanProps) {
                   key={deal._id}
                   draggable
                   onDragStart={() => setDraggedDealId(deal._id)}
-                  className="cursor-grab rounded-2xl border border-border bg-card p-4 transition hover:-translate-y-0.5 hover:shadow-lg"
+                  className="cursor-grab rounded-[24px] border border-border bg-card p-4 transition hover:-translate-y-0.5 hover:shadow-[0_18px_50px_rgba(15,23,42,0.12)]"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <h4 className="font-semibold">{deal.title}</h4>
                       <p className="text-sm text-slate-500">${deal.value.toLocaleString()}</p>
                     </div>
-                    <span className="rounded-full bg-muted px-2 py-1 text-xs text-slate-500">
+                    <span className="rounded-full bg-[rgb(var(--secondary)/0.12)] px-2 py-1 text-xs font-semibold text-cyan-700 dark:text-cyan-200">
                       {deal.aiScore?.probabilityScore ?? deal.probability}%
                     </span>
                   </div>
@@ -64,7 +63,7 @@ export function DealKanban({ deals, onStageChange }: DealKanbanProps) {
                 </article>
               ))}
               {dealsByStage[stage].length === 0 && (
-                <div className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-slate-500">
+                <div className="rounded-[24px] border border-dashed border-border p-6 text-center text-sm text-slate-500">
                   Drop a deal here
                 </div>
               )}
