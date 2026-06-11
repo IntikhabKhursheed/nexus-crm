@@ -258,7 +258,7 @@ export default function AiPage() {
             <button
               type="button"
               onClick={() => void loadBaseData()}
-              className="rounded-full border border-border bg-card px-5 py-3 text-sm font-semibold transition hover:bg-muted"
+              className="rounded-[8px] border border-[#e8ecf0] bg-white px-5 py-3 text-sm font-semibold transition hover:bg-[#f8fafc]"
             >
               Refresh data
             </button>

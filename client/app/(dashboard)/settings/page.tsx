@@ -75,7 +75,7 @@ export default function SettingsPage() {
               <input className="rounded-2xl border border-border bg-card px-4 py-3 outline-none" value={form.secondaryColor} onChange={(event) => setForm({ ...form, secondaryColor: event.target.value })} />
               <input className="rounded-2xl border border-border bg-card px-4 py-3 outline-none md:col-span-2" value={form.accentColor} onChange={(event) => setForm({ ...form, accentColor: event.target.value })} />
             </div>
-            <button onClick={() => void handleSave()} className="mt-4 rounded-full bg-[rgb(var(--primary))] px-5 py-3 font-semibold text-[rgb(var(--background))]">Save settings</button>
+            <button onClick={() => void handleSave()} className="mt-4 rounded-[8px] bg-[var(--nx-brand)] px-5 py-3 font-semibold text-white">Save settings</button>
           </Panel>
         )}
       </div>

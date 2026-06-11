@@ -28,18 +28,18 @@ export default function HomePage() {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <Link
-                href="/register"
-                className="rounded-full bg-[rgb(var(--primary))] px-6 py-3.5 text-sm font-semibold text-[rgb(var(--background))] shadow-[0_20px_50px_rgba(15,23,42,0.22)] hover:-translate-y-0.5"
-              >
-                Create workspace
-              </Link>
-              <Link
-                href="/login"
-                className="rounded-full border border-border bg-card px-6 py-3.5 text-sm font-semibold hover:bg-muted"
-              >
-                Sign in
-              </Link>
+            <Link
+              href="/register"
+              className="rounded-[8px] bg-[var(--nx-brand)] px-6 py-3.5 text-sm font-semibold text-white shadow-[0_20px_50px_rgba(99,102,241,0.22)] hover:bg-[var(--nx-brand-dark)]"
+            >
+              Create workspace
+            </Link>
+            <Link
+              href="/login"
+              className="rounded-[8px] border border-[#e8ecf0] bg-white px-6 py-3.5 text-sm font-semibold hover:bg-[#f8fafc]"
+            >
+              Sign in
+            </Link>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3">

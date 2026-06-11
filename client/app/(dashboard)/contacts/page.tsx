@@ -76,7 +76,7 @@ export default function ContactsPage() {
           actions={
             <Link
               href="/contacts/new"
-              className="rounded-full bg-[rgb(var(--primary))] px-5 py-3 text-sm font-semibold text-[rgb(var(--background))] shadow-[0_18px_50px_rgba(15,23,42,0.18)] hover:-translate-y-0.5"
+              className="rounded-[8px] bg-[var(--nx-brand)] px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_50px_rgba(99,102,241,0.18)] hover:bg-[var(--nx-brand-dark)]"
             >
               Add contact
             </Link>

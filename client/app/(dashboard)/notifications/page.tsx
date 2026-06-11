@@ -72,7 +72,7 @@ export default function NotificationsPage() {
           title="Notification history"
           description="Review activity in a calmer inbox-style layout with unread counts and bulk actions."
           actions={
-            <button onClick={() => void handleMarkAllRead()} className="rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold hover:bg-muted">
+            <button onClick={() => void handleMarkAllRead()} className="rounded-[8px] border border-[#e8ecf0] bg-white px-4 py-2 text-sm font-semibold hover:bg-[#f8fafc]">
               Mark all read
             </button>
           }

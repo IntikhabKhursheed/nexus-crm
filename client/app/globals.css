@@ -1,18 +1,59 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: 244 247 252;
+  --nx-sidebar-bg: #0f172a;
+  --nx-sidebar-border: rgba(255, 255, 255, 0.07);
+  --nx-sidebar-active-bg: rgba(99, 102, 241, 0.18);
+  --nx-sidebar-active-border: rgba(99, 102, 241, 0.35);
+  --nx-sidebar-text: #94a3b8;
+  --nx-sidebar-text-active: #e2e8f0;
+  --nx-sidebar-icon: #475569;
+  --nx-sidebar-icon-active: #818cf8;
+  --nx-sidebar-section-label: #475569;
+  --nx-topbar-bg: #ffffff;
+  --nx-topbar-border: #e8ecf0;
+  --nx-topbar-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --nx-page-bg: #f0f2f5;
+  --nx-card-bg: #ffffff;
+  --nx-card-border: #e8ecf0;
+  --nx-card-radius: 10px;
+  --nx-card-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  --nx-brand: #6366f1;
+  --nx-brand-dark: #4f46e5;
+  --nx-brand-light: #f5f3ff;
+  --nx-brand-text: #4338ca;
+  --nx-hero-gradient: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e3a5f 100%);
+  --nx-text-primary: #0f172a;
+  --nx-text-secondary: #374151;
+  --nx-text-muted: #94a3b8;
+  --nx-text-placeholder: #c4cdd8;
+  --nx-green: #10b981;
+  --nx-green-bg: #f0fdf4;
+  --nx-amber: #f59e0b;
+  --nx-amber-bg: #fffbeb;
+  --nx-red: #ef4444;
+  --nx-red-bg: #fef2f2;
+  --nx-blue: #3b82f6;
+  --nx-blue-bg: #eff6ff;
+  --nx-radius-sm: 6px;
+  --nx-radius-md: 8px;
+  --nx-radius-lg: 10px;
+  --nx-radius-xl: 14px;
+  --background: 240 242 245;
   --foreground: 15 23 42;
-  --surface: 247 249 253;
+  --surface: 248 250 252;
   --card: 255 255 255;
   --border: 226 232 240;
   --muted: 241 245 249;
-  --primary: 15 23 42;
-  --secondary: 56 189 248;
+  --primary: 99 102 241;
+  --secondary: 99 102 241;
   --accent: 16 185 129;
   --danger: 239 68 68;
+  font-family: "Inter", sans-serif;
   color-scheme: light;
 }
 
@@ -23,8 +64,8 @@
   --card: 15 23 42;
   --border: 51 65 85;
   --muted: 30 41 59;
-  --primary: 248 250 252;
-  --secondary: 56 189 248;
+  --primary: 99 102 241;
+  --secondary: 99 102 241;
   --accent: 52 211 153;
   --danger: 248 113 113;
   color-scheme: dark;
@@ -37,12 +78,9 @@ html {
 body {
   @apply bg-background text-foreground antialiased;
   min-height: 100vh;
+  font-family: "Inter", sans-serif;
   font-feature-settings: "ss01" on, "cv11" on;
-  background-image:
-    radial-gradient(circle at top left, rgb(56 189 248 / 0.16), transparent 26%),
-    radial-gradient(circle at top right, rgb(16 185 129 / 0.13), transparent 24%),
-    radial-gradient(circle at bottom center, rgb(15 23 42 / 0.06), transparent 32%);
-  background-attachment: fixed;
+  background: rgb(var(--background));
 }
 
 ::selection {
@@ -73,7 +111,7 @@ input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgb(var(--secondary) / 0.24);
+  box-shadow: 0 0 0 3px rgb(99 102 241 / 0.1);
 }
 
 body::-webkit-scrollbar {
@@ -91,10 +129,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 .grid-bg {
-  background:
-    radial-gradient(circle at 18% 20%, rgb(56 189 248 / 0.16), transparent 24%),
-    radial-gradient(circle at 84% 12%, rgb(16 185 129 / 0.14), transparent 22%),
-    linear-gradient(180deg, rgb(var(--background)), rgb(var(--background)));
+  background: rgb(var(--background));
 }
 
 .surface-shell {
@@ -121,12 +156,20 @@ body::-webkit-scrollbar-thumb {
   input,
   select,
   textarea {
-    @apply rounded-2xl border border-border bg-card/95 px-4 py-3 text-sm text-foreground outline-none transition placeholder:text-slate-400;
+    @apply w-full rounded-lg border border-[#e2e8f0] bg-[#fafafa] px-4 text-[13.5px] text-foreground outline-none transition placeholder:text-[#c4cdd8];
+    min-height: 40px;
   }
 
   input:focus,
   select:focus,
   textarea:focus {
-    @apply border-cyan-400 ring-4 ring-cyan-400/15;
+    border-color: rgb(99 102 241);
+    box-shadow: 0 0 0 3px rgb(99 102 241 / 0.1);
+  }
+
+  textarea {
+    min-height: 96px;
+    padding-top: 12px;
+    padding-bottom: 12px;
   }
 }
