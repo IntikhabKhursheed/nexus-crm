@@ -12,7 +12,12 @@ import {
 import { connectSocket, disconnectSocket, getSocket } from "@/lib/socket";
 import { BellIcon } from "./ui/icons";
 
-export function NotificationBell({ organizationId }: { organizationId?: string }) {
+type NotificationBellProps = {
+  organizationId?: string;
+  compact?: boolean;
+};
+
+export function NotificationBell({ organizationId, compact = false }: NotificationBellProps) {
   const [notifications, setNotifications] = useState<NotificationRecord[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [open, setOpen] = useState(false);
@@ -73,14 +78,23 @@ export function NotificationBell({ organizationId }: { organizationId?: string }
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
-        className="relative inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground shadow-[0_10px_30px_rgba(15,23,42,0.06)] hover:-translate-y-0.5 hover:bg-muted"
+        aria-label={compact ? "Open notifications" : "Open notifications"}
+        className={
+          compact
+            ? "relative inline-flex h-10 w-10 items-center justify-center rounded-full text-foreground transition hover:bg-muted"
+            : "relative inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground shadow-[0_10px_30px_rgba(15,23,42,0.06)] hover:-translate-y-0.5 hover:bg-muted"
+        }
       >
         <BellIcon className="h-4 w-4" />
-        Alerts
+        {!compact && "Alerts"}
         {unreadCount > 0 && (
-          <span className="absolute -right-1 -top-1 rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-semibold text-white shadow-lg">
-            {unreadCount}
-          </span>
+          compact ? (
+            <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-rose-500 ring-2 ring-background" />
+          ) : (
+            <span className="absolute -right-1 -top-1 rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-semibold text-white shadow-lg">
+              {unreadCount}
+            </span>
+          )
         )}
       </button>
 
