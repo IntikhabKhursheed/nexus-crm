@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { EmptyState, ErrorState, LoadingState } from "@/components/ui/states";
 import { Input, Select } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast";
+import { PageHeader, Panel } from "@/components/ui/chrome";
 import {
   inviteTeamMember,
   listTeamMembers,
@@ -64,15 +65,15 @@ export default function TeamPage() {
   return (
     <WorkspaceShell>
       <div className="space-y-6">
-        <div>
-          <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Team</p>
-          <h2 className="mt-2 text-3xl font-semibold">Team management</h2>
-        </div>
+        <PageHeader
+          eyebrow="Team"
+          title="Team management"
+          description="Invite teammates, change roles, and keep pending invitations clearly visible."
+        />
 
         {error && <ErrorState description={error} onRetry={() => void loadData()} />}
 
-        <Card>
-          <h3 className="text-xl font-semibold">Invite member</h3>
+        <Panel title="Invite member" description="Send an invitation and choose the appropriate role.">
           <div className="mt-4 grid gap-4 md:grid-cols-[1fr_220px_auto]">
             <Input
               placeholder="Email address"
@@ -90,10 +91,9 @@ export default function TeamPage() {
             </Select>
             <Button onClick={() => void handleInvite()}>Send invite</Button>
           </div>
-        </Card>
+        </Panel>
 
-        <Card>
-          <h3 className="text-xl font-semibold">Members</h3>
+        <Panel title="Members" description="Manage roles, status, and access across the workspace.">
           <div className="mt-4 space-y-3">
             {loading ? (
               <LoadingState label="Loading team members..." />
@@ -189,10 +189,9 @@ export default function TeamPage() {
               ))
             )}
           </div>
-        </Card>
+        </Panel>
 
-        <Card>
-          <h3 className="text-xl font-semibold">Pending invitations</h3>
+        <Panel title="Pending invitations" description="Invitations will appear here until they are accepted or expire.">
           <div className="mt-4 space-y-3">
             {invitations.map((invitation) => (
               <div key={invitation._id} className="rounded-2xl border border-border bg-card p-4 text-sm">
@@ -207,7 +206,7 @@ export default function TeamPage() {
               />
             )}
           </div>
-        </Card>
+        </Panel>
       </div>
     </WorkspaceShell>
   );

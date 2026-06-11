@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { WorkspaceShell } from "@/components/workspace-shell";
 import { getOrganizationSettings, updateOrganizationSettings } from "@/lib/settings";
+import { PageHeader, Panel } from "@/components/ui/chrome";
 
 export default function SettingsPage() {
   const [organization, setOrganization] = useState<Awaited<ReturnType<typeof getOrganizationSettings>>["organization"] | null>(null);
@@ -57,13 +58,14 @@ export default function SettingsPage() {
   return (
     <WorkspaceShell>
       <div className="space-y-6">
-        <div>
-          <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Settings</p>
-          <h2 className="mt-2 text-3xl font-semibold">Organization settings</h2>
-        </div>
+        <PageHeader
+          eyebrow="Settings"
+          title="Organization settings"
+          description="Adjust the workspace name, branding colors, timezone, currency, and logo."
+        />
 
         {organization && (
-          <section className="glass-card rounded-3xl p-6">
+          <Panel title="Brand and workspace" description="Tune the core settings for your organization.">
             <div className="grid gap-4 md:grid-cols-2">
               <input className="rounded-2xl border border-border bg-card px-4 py-3 outline-none" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} />
               <input className="rounded-2xl border border-border bg-card px-4 py-3 outline-none" value={form.timezone} onChange={(event) => setForm({ ...form, timezone: event.target.value })} />
@@ -73,8 +75,8 @@ export default function SettingsPage() {
               <input className="rounded-2xl border border-border bg-card px-4 py-3 outline-none" value={form.secondaryColor} onChange={(event) => setForm({ ...form, secondaryColor: event.target.value })} />
               <input className="rounded-2xl border border-border bg-card px-4 py-3 outline-none md:col-span-2" value={form.accentColor} onChange={(event) => setForm({ ...form, accentColor: event.target.value })} />
             </div>
-            <button onClick={() => void handleSave()} className="mt-4 rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white">Save settings</button>
-          </section>
+            <button onClick={() => void handleSave()} className="mt-4 rounded-full bg-[rgb(var(--primary))] px-5 py-3 font-semibold text-[rgb(var(--background))]">Save settings</button>
+          </Panel>
         )}
       </div>
     </WorkspaceShell>

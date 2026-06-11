@@ -5,6 +5,7 @@ import { WorkspaceShell } from "@/components/workspace-shell";
 import { Card } from "@/components/ui/card";
 import { EmptyState, ErrorState, LoadingState } from "@/components/ui/states";
 import { createCampaign, listCampaigns, sendCampaign, type Campaign } from "@/lib/campaigns";
+import { PageHeader, Panel } from "@/components/ui/chrome";
 
 export default function CampaignsPage() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
@@ -54,16 +55,16 @@ export default function CampaignsPage() {
   return (
     <WorkspaceShell>
       <div className="space-y-6">
-        <div>
-          <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Campaigns</p>
-          <h2 className="mt-2 text-3xl font-semibold">Bulk email campaigns</h2>
-        </div>
+        <PageHeader
+          eyebrow="Campaigns"
+          title="Bulk email campaigns"
+          description="Build branded sends with segment JSON, tracked sends, and a cleaner list view."
+        />
 
         {error && <ErrorState description={error} onRetry={() => void loadData()} />}
         {formError && <p className="text-sm text-red-500">{formError}</p>}
 
-        <Card>
-          <h3 className="text-xl font-semibold">Create campaign</h3>
+        <Panel title="Create campaign" description="Compose a campaign and define a target segment.">
           <div className="mt-4 grid gap-4">
             <input
               className="rounded-2xl border border-border bg-card px-4 py-3 outline-none"
@@ -96,10 +97,9 @@ export default function CampaignsPage() {
               Save campaign
             </button>
           </div>
-        </Card>
+        </Panel>
 
-        <Card>
-          <h3 className="text-xl font-semibold">Campaign history</h3>
+        <Panel title="Campaign history" description="See send status, opens, and the current campaign state.">
           <div className="mt-4 space-y-3">
             {loading ? (
               <LoadingState label="Loading campaigns..." />
@@ -130,7 +130,7 @@ export default function CampaignsPage() {
               ))
             )}
           </div>
-        </Card>
+        </Panel>
       </div>
     </WorkspaceShell>
   );

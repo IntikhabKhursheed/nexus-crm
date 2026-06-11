@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { EmptyState, ErrorState, LoadingState } from "@/components/ui/states";
 import { Modal } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast";
+import { PageHeader, Panel } from "@/components/ui/chrome";
 import { deleteCompany, listCompanies, type Company } from "@/lib/crm";
 
 export default function CompaniesPage() {
@@ -59,22 +60,23 @@ export default function CompaniesPage() {
   return (
     <WorkspaceShell>
       <div className="space-y-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Companies</p>
-            <h2 className="mt-2 text-3xl font-semibold">Company management</h2>
-          </div>
-          <Link
-            href="/companies/new"
-            className="rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white transition hover:opacity-90 dark:bg-slate-100 dark:text-slate-950"
-          >
-            Add company
-          </Link>
-        </div>
+        <PageHeader
+          eyebrow="Companies"
+          title="Company management"
+          description="Organize accounts, track relationships, and keep company records easy to browse."
+          actions={
+            <Link
+              href="/companies/new"
+              className="rounded-full bg-[rgb(var(--primary))] px-5 py-3 text-sm font-semibold text-[rgb(var(--background))] shadow-[0_18px_50px_rgba(15,23,42,0.18)] hover:-translate-y-0.5"
+            >
+              Add company
+            </Link>
+          }
+        />
 
         {error && <ErrorState description={error} onRetry={() => void loadCompanies()} />}
 
-        <Card className="overflow-hidden p-0">
+        <Panel className="overflow-hidden p-0">
           {loading ? (
             <LoadingState label="Loading companies..." />
           ) : companies.length === 0 ? (
@@ -87,7 +89,7 @@ export default function CompaniesPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full text-left">
-                <thead className="border-b border-border text-xs uppercase tracking-[0.2em] text-slate-500">
+                <thead className="bg-muted/50 text-xs uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">
                   <tr>
                     <th className="px-6 py-4">Company</th>
                     <th className="px-6 py-4">Industry</th>
@@ -98,7 +100,7 @@ export default function CompaniesPage() {
                 </thead>
                 <tbody>
                   {companies.map((company) => (
-                    <tr key={company._id} className="border-b border-border/70">
+                    <tr key={company._id} className="border-b border-border/60 odd:bg-card even:bg-muted/30 hover:bg-[rgb(var(--secondary)/0.06)]">
                       <td className="px-6 py-4">
                         <Link href={`/companies/${company._id}`} className="font-semibold hover:underline">
                           {company.name}
@@ -128,7 +130,7 @@ export default function CompaniesPage() {
               </table>
             </div>
           )}
-        </Card>
+        </Panel>
         <Modal
           open={Boolean(companyToDelete)}
           title="Delete company?"

@@ -9,6 +9,7 @@ import { EmptyState, ErrorState, LoadingState } from "@/components/ui/states";
 import { Modal } from "@/components/ui/modal";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast";
+import { Badge, PageHeader, Panel } from "@/components/ui/chrome";
 import { deleteContact, listContacts, type Contact } from "@/lib/crm";
 
 export default function ContactsPage() {
@@ -68,20 +69,41 @@ export default function ContactsPage() {
   return (
     <WorkspaceShell>
       <div className="space-y-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Contacts</p>
-            <h2 className="mt-2 text-3xl font-semibold">Contact management</h2>
-          </div>
-          <Link
-            href="/contacts/new"
-            className="rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white transition hover:opacity-90 dark:bg-slate-100 dark:text-slate-950"
-          >
-            Add contact
-          </Link>
-        </div>
+        <PageHeader
+          eyebrow="Contacts"
+          title="Contact management"
+          description="Filter, edit, and enrich contacts with a cleaner workspace experience."
+          actions={
+            <Link
+              href="/contacts/new"
+              className="rounded-full bg-[rgb(var(--primary))] px-5 py-3 text-sm font-semibold text-[rgb(var(--background))] shadow-[0_18px_50px_rgba(15,23,42,0.18)] hover:-translate-y-0.5"
+            >
+              Add contact
+            </Link>
+          }
+        />
 
-        <Card className="p-4">
+        <Panel
+          title="Search and filter"
+          description="Use the filters below to narrow the list by keyword, company, or tags."
+          actions={
+            <>
+              <Button variant="secondary" onClick={() => void loadContacts()}>
+                Search
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  const reset = { q: "", name: "", email: "", company: "", tags: "" };
+                  setQuery(reset);
+                  void loadContacts(reset);
+                }}
+              >
+                Reset
+              </Button>
+            </>
+          }
+        >
           <div className="grid gap-3 md:grid-cols-5">
             {Object.entries(query).map(([key, value]) => (
               <Input
@@ -92,26 +114,11 @@ export default function ContactsPage() {
               />
             ))}
           </div>
-          <div className="mt-4 flex gap-3">
-            <Button variant="secondary" onClick={() => void loadContacts()}>
-              Search
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => {
-                const reset = { q: "", name: "", email: "", company: "", tags: "" };
-                setQuery(reset);
-                void loadContacts(reset);
-              }}
-            >
-              Reset
-            </Button>
-          </div>
-        </Card>
+        </Panel>
 
         {error && <ErrorState description={error} onRetry={() => void loadContacts()} />}
 
-        <Card className="overflow-hidden p-0">
+        <Panel className="overflow-hidden p-0">
           {loading ? (
             <LoadingState label="Loading contacts..." />
           ) : contacts.length === 0 ? (
@@ -124,7 +131,7 @@ export default function ContactsPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full text-left">
-                <thead className="border-b border-border text-xs uppercase tracking-[0.2em] text-slate-500">
+                <thead className="bg-muted/50 text-xs uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">
                   <tr>
                     <th className="px-6 py-4">Name</th>
                     <th className="px-6 py-4">Email</th>
@@ -135,7 +142,7 @@ export default function ContactsPage() {
                 </thead>
                 <tbody>
                   {contacts.map((contact) => (
-                    <tr key={contact._id} className="border-b border-border/70">
+                    <tr key={contact._id} className="border-b border-border/60 odd:bg-card even:bg-muted/30 hover:bg-[rgb(var(--secondary)/0.06)]">
                       <td className="px-6 py-4">
                         <Link href={`/contacts/${contact._id}`} className="font-semibold hover:underline">
                           {contact.name}
@@ -147,9 +154,9 @@ export default function ContactsPage() {
                       <td className="px-6 py-4">
                         <div className="flex flex-wrap gap-2">
                           {contact.tags.map((tag) => (
-                            <span key={tag} className="rounded-full bg-muted px-3 py-1 text-xs text-slate-500">
+                            <Badge key={tag} tone="cyan">
                               {tag}
-                            </span>
+                            </Badge>
                           ))}
                         </div>
                       </td>
@@ -173,7 +180,7 @@ export default function ContactsPage() {
               </table>
             </div>
           )}
-        </Card>
+        </Panel>
         <Modal
           open={Boolean(contactToDelete)}
           title="Delete contact?"

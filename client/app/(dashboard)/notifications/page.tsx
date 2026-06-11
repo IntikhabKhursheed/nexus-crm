@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { EmptyState, ErrorState, LoadingState } from "@/components/ui/states";
 import { useToast } from "@/components/ui/toast";
+import { Badge, PageHeader, Panel } from "@/components/ui/chrome";
 import {
   getUnreadNotificationCount,
   listNotifications,
@@ -66,20 +67,21 @@ export default function NotificationsPage() {
   return (
     <WorkspaceShell>
       <div className="space-y-6">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Notifications</p>
-            <h2 className="mt-2 text-3xl font-semibold">Notification history</h2>
-          </div>
-          <button onClick={() => void handleMarkAllRead()} className="rounded-2xl border border-border bg-card px-4 py-2 text-sm font-semibold">
-            Mark all read
-          </button>
-        </div>
+        <PageHeader
+          eyebrow="Notifications"
+          title="Notification history"
+          description="Review activity in a calmer inbox-style layout with unread counts and bulk actions."
+          actions={
+            <button onClick={() => void handleMarkAllRead()} className="rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold hover:bg-muted">
+              Mark all read
+            </button>
+          }
+        />
 
-        <p className="text-sm text-slate-500">Unread count: {unreadCount}</p>
+        <Badge tone="rose">Unread: {unreadCount}</Badge>
         {error && <ErrorState description={error} onRetry={() => void loadData()} />}
 
-        <Card className="space-y-3">
+        <Panel className="space-y-3">
           {loading ? (
             <LoadingState label="Loading notifications..." />
           ) : notifications.length === 0 ? (
@@ -106,7 +108,7 @@ export default function NotificationsPage() {
               </button>
             ))
           )}
-        </Card>
+        </Panel>
       </div>
     </WorkspaceShell>
   );

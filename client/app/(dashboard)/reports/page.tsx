@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { WorkspaceShell } from "@/components/workspace-shell";
+import { PageHeader, Panel } from "@/components/ui/chrome";
 import {
   createSavedReport,
   deleteSavedReport,
@@ -85,15 +86,16 @@ export default function ReportsPage() {
   return (
     <WorkspaceShell>
       <div className="space-y-6">
-        <div>
-          <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Reports</p>
-          <h2 className="mt-2 text-3xl font-semibold">Custom report builder</h2>
-        </div>
+        <PageHeader
+          eyebrow="Reports"
+          title="Custom report builder"
+          description="Preview, save, and export custom report configurations with a more polished workspace."
+        />
 
         {error && <p className="text-sm text-red-500">{error}</p>}
         {previewError && <p className="text-sm text-red-500">{previewError}</p>}
 
-        <section className="glass-card rounded-3xl p-6">
+        <Panel title="Builder" description="Configure the report, preview rows, and export the output you need.">
           <div className="grid gap-4 md:grid-cols-2">
             <select className="rounded-2xl border border-border bg-card px-4 py-3 outline-none" value={configuration.entity} onChange={(event) => setConfiguration({ ...configuration, entity: event.target.value as ReportConfiguration["entity"] })}>
               <option value="contacts">Contacts</option>
@@ -113,15 +115,13 @@ export default function ReportsPage() {
             <input className="rounded-2xl border border-border bg-card px-4 py-3 outline-none" placeholder="Saved report name" value={reportName} onChange={(event) => setReportName(event.target.value)} />
             <button onClick={() => void handleSave()} className="rounded-2xl border border-border bg-card px-5 py-3 font-semibold">Save report</button>
           </div>
-        </section>
+        </Panel>
 
-        <section className="glass-card rounded-3xl p-6">
-          <h3 className="text-xl font-semibold">Preview</h3>
+        <Panel title="Preview" description="Rows returned by the current configuration.">
           <pre className="mt-4 overflow-x-auto rounded-2xl border border-border bg-card p-4 text-xs text-slate-500">{JSON.stringify(rows, null, 2)}</pre>
-        </section>
+        </Panel>
 
-        <section className="glass-card rounded-3xl p-6">
-          <h3 className="text-xl font-semibold">Saved reports</h3>
+        <Panel title="Saved reports" description="Re-use report configurations without rebuilding them.">
           <div className="mt-4 space-y-3">
             {savedReports.map((report) => (
               <div key={report._id} className="flex items-center justify-between rounded-2xl border border-border bg-card p-4">
@@ -133,7 +133,7 @@ export default function ReportsPage() {
             ))}
             {savedReports.length === 0 && <p className="text-sm text-slate-500">No saved reports yet.</p>}
           </div>
-        </section>
+        </Panel>
       </div>
     </WorkspaceShell>
   );

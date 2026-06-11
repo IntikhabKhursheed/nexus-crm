@@ -19,6 +19,7 @@ import {
   type AiInsightRecord,
   type AiWeeklyDigest
 } from "@/lib/ai";
+import { PageHeader, Panel } from "@/components/ui/chrome";
 
 type AiForms = {
   enrichment: {
@@ -76,13 +77,9 @@ function SectionCard({
   children: ReactNode;
 }) {
   return (
-    <section className="glass-card rounded-3xl p-6">
-      <div className="mb-4">
-        <h3 className="text-xl font-semibold">{title}</h3>
-        <p className="mt-2 text-sm text-slate-500">{description}</p>
-      </div>
+    <Panel title={title} description={description}>
       {children}
-    </section>
+    </Panel>
   );
 }
 
@@ -253,22 +250,20 @@ export default function AiPage() {
   return (
     <WorkspaceShell>
       <div className="space-y-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-slate-500">AI</p>
-            <h2 className="mt-2 text-3xl font-semibold">Groq-powered sales intelligence</h2>
-            <p className="mt-2 max-w-2xl text-sm text-slate-500">
-              Enrich contacts and companies, draft outreach, score deals, generate briefs, forecast revenue, and send weekly digests.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => void loadBaseData()}
-            className="rounded-2xl border border-border bg-card px-5 py-3 text-sm font-semibold transition hover:bg-muted"
-          >
-            Refresh data
-          </button>
-        </div>
+        <PageHeader
+          eyebrow="AI Hub"
+          title="Groq-powered sales intelligence"
+          description="Enrich contacts and companies, draft outreach, score deals, generate briefs, forecast revenue, and send weekly digests."
+          actions={
+            <button
+              type="button"
+              onClick={() => void loadBaseData()}
+              className="rounded-full border border-border bg-card px-5 py-3 text-sm font-semibold transition hover:bg-muted"
+            >
+              Refresh data
+            </button>
+          }
+        />
 
         {pageError && <p className="text-sm text-red-500">{pageError}</p>}
         {loading ? <p className="text-sm text-slate-500">Loading AI workspace...</p> : null}

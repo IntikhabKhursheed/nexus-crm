@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { WorkspaceShell } from "@/components/workspace-shell";
 import { Card } from "@/components/ui/card";
 import { ErrorState, LoadingState } from "@/components/ui/states";
+import { PageHeader, Panel, StatCard, Badge } from "@/components/ui/chrome";
 import { getAnalyticsDashboard } from "@/lib/analytics";
 
 export default function AnalyticsPage() {
@@ -23,10 +24,11 @@ export default function AnalyticsPage() {
   return (
     <WorkspaceShell>
       <div className="space-y-6">
-        <div>
-          <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Analytics</p>
-          <h2 className="mt-2 text-3xl font-semibold">Executive dashboard</h2>
-        </div>
+        <PageHeader
+          eyebrow="Analytics"
+          title="Executive dashboard"
+          description="Track revenue, pipeline health, activity, and AI outcomes in one clear snapshot."
+        />
 
         {loading ? (
           <LoadingState label="Loading analytics..." />
@@ -46,15 +48,12 @@ export default function AnalyticsPage() {
                 ["Avg deal", analytics.sales.averageDealSize],
                 ["Avg cycle", `${analytics.sales.averageSalesCycle} days`]
               ].map(([label, value]) => (
-                <div key={String(label)} className="rounded-3xl border border-border bg-card p-5">
-                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">{label}</p>
-                  <p className="mt-3 text-2xl font-semibold">{String(value)}</p>
-                </div>
+                <StatCard key={String(label)} label={String(label)} value={String(value)} accent="cyan" />
               ))}
             </div>
 
             <div className="grid gap-6 xl:grid-cols-2">
-              <section className="glass-card rounded-3xl p-6">
+              <Panel title="Revenue trend" description="Month-by-month performance with a modern rail chart.">
                 <h3 className="text-xl font-semibold">Revenue trend</h3>
                 <div className="mt-4 space-y-3">
                   {analytics.charts.revenueTrend.map((item) => (
@@ -69,9 +68,9 @@ export default function AnalyticsPage() {
                     </div>
                   ))}
                 </div>
-              </section>
+              </Panel>
 
-              <section className="glass-card rounded-3xl p-6">
+              <Panel title="Pipeline distribution" description="Stage density across the current forecast window.">
                 <h3 className="text-xl font-semibold">Pipeline distribution</h3>
                 <div className="mt-4 space-y-3">
                   {analytics.charts.pipelineDistribution.map((item) => (
@@ -86,22 +85,13 @@ export default function AnalyticsPage() {
                     </div>
                   ))}
                 </div>
-              </section>
+              </Panel>
             </div>
 
             <div className="grid gap-4 md:grid-cols-3">
-              <div className="rounded-3xl border border-border bg-card p-5">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Emails sent</p>
-                <p className="mt-3 text-2xl font-semibold">{analytics.activity.emailsSent}</p>
-              </div>
-              <div className="rounded-3xl border border-border bg-card p-5">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Meetings completed</p>
-                <p className="mt-3 text-2xl font-semibold">{analytics.activity.meetingsCompleted}</p>
-              </div>
-              <div className="rounded-3xl border border-border bg-card p-5">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">AI reports</p>
-                <p className="mt-3 text-2xl font-semibold">{analytics.ai.dealsScored}</p>
-              </div>
+              <StatCard label="Emails sent" value={analytics.activity.emailsSent} accent="emerald" />
+              <StatCard label="Meetings completed" value={analytics.activity.meetingsCompleted} accent="amber" />
+              <StatCard label="AI reports" value={analytics.ai.dealsScored} accent="rose" />
             </div>
           </>
         )}

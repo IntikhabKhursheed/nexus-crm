@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { EmptyState, ErrorState, LoadingState } from "@/components/ui/states";
 import { Input, Textarea, Select } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast";
+import { PageHeader } from "@/components/ui/chrome";
 import {
   createDeal,
   listCompanies,
@@ -110,12 +111,11 @@ export default function DealsPage() {
   return (
     <WorkspaceShell>
       <div className="space-y-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Deals</p>
-            <h2 className="mt-2 text-3xl font-semibold">Deal pipeline</h2>
-          </div>
-        </div>
+        <PageHeader
+          eyebrow="Deals"
+          title="Deal pipeline"
+          description="Create opportunities and drag them across stages with a smoother kanban experience."
+        />
 
         <Card>
           <h3 className="text-xl font-semibold">Create deal</h3>
