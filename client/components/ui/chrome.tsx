@@ -14,20 +14,23 @@ export function PageHeader({
   description?: string;
   actions?: ReactNode;
   children?: ReactNode;
-}) {
+  }) {
   return (
-    <section className="relative overflow-hidden rounded-[32px] border border-border/70 bg-surface/80 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)] backdrop-blur-xl">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.14),transparent_36%),radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.12),transparent_28%)]" />
-      <div className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-        <div className="max-w-3xl space-y-3">
+    <section
+      className="relative overflow-hidden rounded-[var(--nx-radius-xl)] border border-[rgba(99,102,241,0.28)] px-7 py-6 shadow-[0_20px_60px_rgba(0,0,0,0.18)]"
+      style={{ background: "var(--nx-hero-gradient)" }}
+    >
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(129,140,248,0.18),transparent_32%),radial-gradient(circle_at_bottom_left,rgba(56,189,248,0.12),transparent_28%)]" />
+      <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+        <div className="max-w-3xl space-y-2">
           {eyebrow && (
-            <p className="text-[11px] font-semibold uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400">
+            <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#818cf8]">
               {eyebrow}
             </p>
           )}
           <div>
-            <h1 className="text-3xl font-semibold tracking-[-0.04em] text-foreground sm:text-4xl">{title}</h1>
-            {description && <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-500 dark:text-slate-400">{description}</p>}
+            <h1 className="text-[22px] font-extrabold tracking-[-0.04em] text-[#f1f5f9] sm:text-3xl">{title}</h1>
+            {description && <p className="mt-2 max-w-3xl text-[12.5px] leading-6 text-[#94a3b8]">{description}</p>}
           </div>
         </div>
         {actions && <div className="flex flex-wrap items-center gap-3">{actions}</div>}
@@ -53,15 +56,15 @@ export function Panel({
   return (
     <section
       className={[
-        "rounded-[28px] border border-border/70 bg-card/90 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur",
+        "rounded-[var(--nx-card-radius)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] px-[18px] py-[16px] shadow-[0_1px_4px_rgba(0,0,0,0.04)]",
         className
       ].join(" ")}
     >
       {(title || description || actions) && (
         <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            {title && <h2 className="text-xl font-semibold tracking-[-0.02em]">{title}</h2>}
-            {description && <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 dark:text-slate-400">{description}</p>}
+            {title && <h2 className="text-[16px] font-semibold tracking-[-0.02em] text-[var(--nx-text-primary)]">{title}</h2>}
+            {description && <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--nx-text-muted)]">{description}</p>}
           </div>
           {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
         </div>
@@ -91,12 +94,12 @@ export function StatCard({
   };
 
   return (
-    <div className="rounded-[24px] border border-border/70 bg-card/90 p-5 shadow-[0_16px_50px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_70px_rgba(15,23,42,0.12)]">
-      <div className={`inline-flex rounded-full bg-gradient-to-br px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.25em] ${accentClasses[accent]}`}>
+    <div className="rounded-[var(--nx-card-radius)] border border-[rgb(var(--border))] bg-[rgb(var(--card))] px-[18px] py-[16px] shadow-[0_1px_4px_rgba(0,0,0,0.04)] transition hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)]">
+      <div className={`inline-flex rounded-[8px] bg-gradient-to-br px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${accentClasses[accent]}`}>
         {label}
       </div>
-      <div className="mt-4 text-2xl font-semibold tracking-[-0.03em]">{value}</div>
-      {detail && <div className="mt-3 text-sm leading-6 text-slate-500 dark:text-slate-400">{detail}</div>}
+      <div className="mt-4 text-[22px] font-extrabold tracking-[-0.03em] text-[var(--nx-text-primary)]">{value}</div>
+      {detail && <div className="mt-3 text-sm leading-6 text-[var(--nx-text-muted)]">{detail}</div>}
     </div>
   );
 }
@@ -118,7 +121,7 @@ export function Badge({
   };
 
   return (
-    <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${classes[tone]}`}>
+    <span className={`inline-flex items-center rounded-lg px-3 py-1 text-xs font-semibold ${classes[tone]}`}>
       {children}
     </span>
   );

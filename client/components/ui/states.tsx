@@ -4,7 +4,7 @@ import { Card } from "./card";
 
 export function LoadingState({ label = "Loading..." }: { label?: string }) {
   return (
-    <Card className="p-8 text-sm text-slate-500">
+    <Card className="p-8 text-sm text-[var(--nx-text-muted)]">
       <div className="flex items-center gap-3">
         <span className="h-3 w-3 animate-pulse rounded-full bg-cyan-500" />
         <p>{label}</p>
@@ -29,7 +29,7 @@ export function EmptyState({
   return (
     <Card className="p-8 text-center">
       <p className="text-lg font-semibold">{title}</p>
-      <p className="mx-auto mt-2 max-w-xl text-sm text-slate-500">{description}</p>
+      <p className="mx-auto mt-2 max-w-xl text-sm text-[var(--nx-text-muted)]">{description}</p>
       {action ?? (actionLabel && onAction ? <Button className="mt-5" onClick={onAction}>{actionLabel}</Button> : null)}
     </Card>
   );

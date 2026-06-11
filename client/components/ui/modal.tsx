@@ -32,9 +32,9 @@ export function Modal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 px-4 py-6 backdrop-blur-md">
-      <div className="w-full max-w-lg rounded-[32px] border border-border bg-card p-6 shadow-[0_30px_80px_rgba(15,23,42,0.28)]">
+      <div className="w-full max-w-lg rounded-[14px] border border-[#e8ecf0] bg-white p-6 shadow-[0_30px_80px_rgba(15,23,42,0.28)]">
         <h3 className="text-xl font-semibold">{title}</h3>
-        {description && <p className="mt-2 text-sm text-slate-500">{description}</p>}
+        {description && <p className="mt-2 text-sm text-[var(--nx-text-muted)]">{description}</p>}
         {children && <div className="mt-4">{children}</div>}
         <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <Button variant="secondary" onClick={onCancel}>
