@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { WorkspaceShell } from "@/components/workspace-shell";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { EmptyState, ErrorState, LoadingState } from "@/components/ui/states";
 import { Input, Select } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast";
@@ -75,15 +74,8 @@ export default function TeamPage() {
 
         <Panel title="Invite member" description="Send an invitation and choose the appropriate role.">
           <div className="mt-4 grid gap-4 md:grid-cols-[1fr_220px_auto]">
-            <Input
-              placeholder="Email address"
-              value={form.email}
-              onChange={(event) => setForm({ ...form, email: event.target.value })}
-            />
-            <Select
-              value={form.role}
-              onChange={(event) => setForm({ ...form, role: event.target.value as TeamRole })}
-            >
+            <Input placeholder="Email address" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} />
+            <Select value={form.role} onChange={(event) => setForm({ ...form, role: event.target.value as TeamRole })}>
               <option value="owner">Owner</option>
               <option value="admin">Admin</option>
               <option value="sales_manager">Sales Manager</option>
@@ -98,20 +90,17 @@ export default function TeamPage() {
             {loading ? (
               <LoadingState label="Loading team members..." />
             ) : members.length === 0 ? (
-              <EmptyState
-                title="No team members yet"
-                description="Invite people to collaborate inside the same organization."
-              />
+              <EmptyState title="No team members yet" description="Invite people to collaborate inside the same organization." />
             ) : (
               members.map((member) => (
                 <div
                   key={member.id}
-                  className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-4 md:flex-row md:items-center md:justify-between"
+                  className="flex flex-col gap-4 rounded-[10px] border border-[#e8ecf0] bg-white p-4 md:flex-row md:items-center md:justify-between"
                 >
                   <div>
-                    <p className="font-semibold">{member.user.name}</p>
-                    <p className="text-sm text-slate-500">{member.user.email}</p>
-                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
+                    <p className="font-semibold text-[rgb(var(--nx-text-primary))]">{member.user.name}</p>
+                    <p className="text-sm text-[rgb(var(--nx-text-muted))]">{member.user.email}</p>
+                    <p className="text-xs uppercase tracking-[0.2em] text-[rgb(var(--nx-text-muted))]">
                       {member.role} · {member.status}
                     </p>
                   </div>
@@ -194,16 +183,13 @@ export default function TeamPage() {
         <Panel title="Pending invitations" description="Invitations will appear here until they are accepted or expire.">
           <div className="mt-4 space-y-3">
             {invitations.map((invitation) => (
-              <div key={invitation._id} className="rounded-2xl border border-border bg-card p-4 text-sm">
-                <p className="font-semibold">{invitation.email}</p>
-                <p className="text-slate-500">{invitation.role}</p>
+              <div key={invitation._id} className="rounded-[10px] border border-[#e8ecf0] bg-white p-4 text-sm">
+                <p className="font-semibold text-[rgb(var(--nx-text-primary))]">{invitation.email}</p>
+                <p className="text-[rgb(var(--nx-text-muted))]">{invitation.role}</p>
               </div>
             ))}
             {!loading && invitations.length === 0 && (
-              <EmptyState
-                title="No pending invitations"
-                description="Invitations will appear here until they are accepted or expire."
-              />
+              <EmptyState title="No pending invitations" description="Invitations will appear here until they are accepted or expire." />
             )}
           </div>
         </Panel>

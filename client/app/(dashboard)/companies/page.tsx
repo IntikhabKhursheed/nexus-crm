@@ -89,7 +89,7 @@ export default function CompaniesPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full text-left">
-                <thead className="bg-muted/50 text-xs uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">
+                <thead className="bg-[#f9fafb] text-xs uppercase tracking-[0.22em] text-[rgb(var(--nx-text-muted))]">
                   <tr>
                     <th className="px-6 py-4">Company</th>
                     <th className="px-6 py-4">Industry</th>
@@ -100,16 +100,16 @@ export default function CompaniesPage() {
                 </thead>
                 <tbody>
                   {companies.map((company) => (
-                    <tr key={company._id} className="border-b border-border/60 odd:bg-card even:bg-muted/30 hover:bg-[rgb(var(--secondary)/0.06)]">
+                    <tr key={company._id} className="border-b border-[#e8ecf0] odd:bg-white even:bg-[#fbfcfd] hover:bg-[#f8fafc]">
                       <td className="px-6 py-4">
                         <Link href={`/companies/${company._id}`} className="font-semibold hover:underline">
                           {company.name}
                         </Link>
-                        <p className="text-sm text-slate-500">{company.website || "-"}</p>
+                        <p className="text-sm text-[rgb(var(--nx-text-muted))]">{company.website || "-"}</p>
                       </td>
-                      <td className="px-6 py-4 text-sm text-slate-500">{company.industry || "-"}</td>
-                      <td className="px-6 py-4 text-sm text-slate-500">{company.location || "-"}</td>
-                      <td className="px-6 py-4 text-sm text-slate-500">{company.contactCount ?? 0}</td>
+                      <td className="px-6 py-4 text-sm text-[rgb(var(--nx-text-muted))]">{company.industry || "-"}</td>
+                      <td className="px-6 py-4 text-sm text-[rgb(var(--nx-text-muted))]">{company.location || "-"}</td>
+                      <td className="px-6 py-4 text-sm text-[rgb(var(--nx-text-muted))]">{company.contactCount ?? 0}</td>
                       <td className="px-6 py-4">
                         <div className="flex flex-wrap gap-2">
                           <Link href={`/companies/${company._id}/edit`} className="text-sm font-semibold underline">

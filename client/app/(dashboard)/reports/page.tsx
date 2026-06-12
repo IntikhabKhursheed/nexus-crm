@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { WorkspaceShell } from "@/components/workspace-shell";
+import { Button } from "@/components/ui/button";
 import { PageHeader, Panel } from "@/components/ui/chrome";
 import {
   createSavedReport,
@@ -97,41 +98,41 @@ export default function ReportsPage() {
 
         <Panel title="Builder" description="Configure the report, preview rows, and export the output you need.">
           <div className="grid gap-4 md:grid-cols-2">
-            <select className="rounded-2xl border border-border bg-card px-4 py-3 outline-none" value={configuration.entity} onChange={(event) => setConfiguration({ ...configuration, entity: event.target.value as ReportConfiguration["entity"] })}>
+            <select className="rounded-lg border border-[#e2e8f0] bg-[#fafafa] px-4 py-3 outline-none" value={configuration.entity} onChange={(event) => setConfiguration({ ...configuration, entity: event.target.value as ReportConfiguration["entity"] })}>
               <option value="contacts">Contacts</option>
               <option value="companies">Companies</option>
               <option value="deals">Deals</option>
               <option value="activities">Activities</option>
             </select>
-            <input className="rounded-2xl border border-border bg-card px-4 py-3 outline-none" placeholder="Columns, comma separated" value={configuration.columns.join(",")} onChange={(event) => setConfiguration({ ...configuration, columns: event.target.value.split(",").map((item) => item.trim()).filter(Boolean) })} />
-            <textarea className="min-h-24 rounded-2xl border border-border bg-card px-4 py-3 font-mono text-sm outline-none md:col-span-2" placeholder='Filters JSON, e.g. {"stage":"Won"}' value={filtersText} onChange={(event) => setFiltersText(event.target.value)} />
+            <input className="rounded-lg border border-[#e2e8f0] bg-[#fafafa] px-4 py-3 outline-none" placeholder="Columns, comma separated" value={configuration.columns.join(",")} onChange={(event) => setConfiguration({ ...configuration, columns: event.target.value.split(",").map((item) => item.trim()).filter(Boolean) })} />
+            <textarea className="min-h-24 rounded-lg border border-[#e2e8f0] bg-[#fafafa] px-4 py-3 font-mono text-sm outline-none md:col-span-2" placeholder='Filters JSON, e.g. {"stage":"Won"}' value={filtersText} onChange={(event) => setFiltersText(event.target.value)} />
             <div className="flex flex-wrap gap-3 md:col-span-2">
-              <button onClick={() => void handlePreview()} className="rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white">Preview</button>
-              <button onClick={() => void handleExportCsv()} className="rounded-2xl border border-border bg-card px-5 py-3 font-semibold">Export CSV</button>
-              <button onClick={() => void handleExportExcel()} className="rounded-2xl border border-border bg-card px-5 py-3 font-semibold">Export Excel</button>
+              <Button onClick={() => void handlePreview()}>Preview</Button>
+              <Button variant="secondary" onClick={() => void handleExportCsv()}>Export CSV</Button>
+              <Button variant="secondary" onClick={() => void handleExportExcel()}>Export Excel</Button>
             </div>
           </div>
           <div className="mt-4 flex flex-wrap gap-3">
-            <input className="rounded-2xl border border-border bg-card px-4 py-3 outline-none" placeholder="Saved report name" value={reportName} onChange={(event) => setReportName(event.target.value)} />
-            <button onClick={() => void handleSave()} className="rounded-2xl border border-border bg-card px-5 py-3 font-semibold">Save report</button>
+            <input className="rounded-lg border border-[#e2e8f0] bg-[#fafafa] px-4 py-3 outline-none" placeholder="Saved report name" value={reportName} onChange={(event) => setReportName(event.target.value)} />
+            <Button variant="secondary" onClick={() => void handleSave()}>Save report</Button>
           </div>
         </Panel>
 
         <Panel title="Preview" description="Rows returned by the current configuration.">
-          <pre className="mt-4 overflow-x-auto rounded-2xl border border-border bg-card p-4 text-xs text-slate-500">{JSON.stringify(rows, null, 2)}</pre>
+          <pre className="mt-4 overflow-x-auto rounded-[10px] border border-[#e8ecf0] bg-white p-4 text-xs text-[rgb(var(--nx-text-muted))]">{JSON.stringify(rows, null, 2)}</pre>
         </Panel>
 
         <Panel title="Saved reports" description="Re-use report configurations without rebuilding them.">
           <div className="mt-4 space-y-3">
             {savedReports.map((report) => (
-              <div key={report._id} className="flex items-center justify-between rounded-2xl border border-border bg-card p-4">
-                <p className="font-semibold">{report.name}</p>
+              <div key={report._id} className="flex items-center justify-between rounded-[10px] border border-[#e8ecf0] bg-white p-4">
+                <p className="font-semibold text-[rgb(var(--nx-text-primary))]">{report.name}</p>
                 <button onClick={() => void deleteSavedReport(report._id).then(loadSavedReports)} className="text-sm font-semibold text-red-500 underline">
                   Delete
                 </button>
               </div>
             ))}
-            {savedReports.length === 0 && <p className="text-sm text-slate-500">No saved reports yet.</p>}
+            {savedReports.length === 0 && <p className="text-sm text-[rgb(var(--nx-text-muted))]">No saved reports yet.</p>}
           </div>
         </Panel>
       </div>

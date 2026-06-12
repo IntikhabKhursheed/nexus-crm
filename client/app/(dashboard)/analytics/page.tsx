@@ -59,11 +59,11 @@ export default function AnalyticsPage() {
                   {analytics.charts.revenueTrend.map((item) => (
                     <div key={item.month}>
                       <div className="mb-1 flex items-center justify-between text-sm">
-                        <span>{item.month}</span>
-                        <span>{item.revenue}</span>
+                        <span className="text-[rgb(var(--nx-text-secondary))]">{item.month}</span>
+                        <span className="font-semibold text-[rgb(var(--nx-text-primary))]">{item.revenue}</span>
                       </div>
-                      <div className="h-3 rounded-full bg-muted">
-                        <div className="h-3 rounded-full bg-slate-950 dark:bg-slate-100" style={{ width: `${Math.min(100, item.revenue / 1000)}%` }} />
+                      <div className="h-3 rounded-full bg-[#eef2f7]">
+                        <div className="h-3 rounded-full bg-[var(--nx-brand)]" style={{ width: `${Math.min(100, item.revenue / 1000)}%` }} />
                       </div>
                     </div>
                   ))}
@@ -76,10 +76,10 @@ export default function AnalyticsPage() {
                   {analytics.charts.pipelineDistribution.map((item) => (
                     <div key={item.stage}>
                       <div className="mb-1 flex items-center justify-between text-sm">
-                        <span>{item.stage}</span>
-                        <span>{item.count}</span>
+                        <span className="text-[rgb(var(--nx-text-secondary))]">{item.stage}</span>
+                        <span className="font-semibold text-[rgb(var(--nx-text-primary))]">{item.count}</span>
                       </div>
-                      <div className="h-3 rounded-full bg-muted">
+                      <div className="h-3 rounded-full bg-[#eef2f7]">
                         <div className="h-3 rounded-full bg-emerald-500" style={{ width: `${Math.min(100, item.count * 18)}%` }} />
                       </div>
                     </div>

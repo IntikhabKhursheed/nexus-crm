@@ -10,9 +10,9 @@ export default function NewContactPage() {
 
   return (
     <WorkspaceShell>
-      <div className="glass-card mx-auto max-w-4xl rounded-3xl p-6">
-        <h2 className="text-2xl font-semibold">Add contact</h2>
-        <p className="mt-2 text-sm text-slate-500">Create a new contact inside the active organization.</p>
+      <div className="mx-auto max-w-4xl rounded-[10px] border border-[#e8ecf0] bg-white p-6">
+        <h2 className="text-2xl font-semibold text-[rgb(var(--nx-text-primary))]">Add contact</h2>
+        <p className="mt-2 text-sm text-[rgb(var(--nx-text-muted))]">Create a new contact inside the active organization.</p>
         <div className="mt-6">
           <ContactForm
             submitLabel="Create contact"

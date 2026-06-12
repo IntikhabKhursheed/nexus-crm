@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { WorkspaceShell } from "@/components/workspace-shell";
-import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { EmptyState, ErrorState, LoadingState } from "@/components/ui/states";
 import { createCampaign, listCampaigns, sendCampaign, type Campaign } from "@/lib/campaigns";
 import { PageHeader, Panel } from "@/components/ui/chrome";
@@ -67,35 +67,32 @@ export default function CampaignsPage() {
         <Panel title="Create campaign" description="Compose a campaign and define a target segment.">
           <div className="mt-4 grid gap-4">
             <input
-              className="rounded-2xl border border-border bg-card px-4 py-3 outline-none"
+              className="rounded-lg border border-[#e2e8f0] bg-[#fafafa] px-4 py-3 outline-none"
               placeholder="Campaign name"
               value={form.name}
               onChange={(event) => setForm({ ...form, name: event.target.value })}
             />
             <input
-              className="rounded-2xl border border-border bg-card px-4 py-3 outline-none"
+              className="rounded-lg border border-[#e2e8f0] bg-[#fafafa] px-4 py-3 outline-none"
               placeholder="Subject"
               value={form.subject}
               onChange={(event) => setForm({ ...form, subject: event.target.value })}
             />
             <textarea
-              className="min-h-40 rounded-2xl border border-border bg-card px-4 py-3 outline-none"
+              className="min-h-40 rounded-lg border border-[#e2e8f0] bg-[#fafafa] px-4 py-3 outline-none"
               placeholder="Content with {{firstName}}, {{company}}, {{dealValue}}"
               value={form.content}
               onChange={(event) => setForm({ ...form, content: event.target.value })}
             />
             <textarea
-              className="min-h-28 rounded-2xl border border-border bg-card px-4 py-3 font-mono text-sm outline-none"
+              className="min-h-28 rounded-lg border border-[#e2e8f0] bg-[#fafafa] px-4 py-3 font-mono text-sm outline-none"
               placeholder='Segment JSON, e.g. {"tag":"Hot"}'
               value={form.segment}
               onChange={(event) => setForm({ ...form, segment: event.target.value })}
             />
-            <button
-              onClick={() => void handleCreate()}
-              className="justify-self-start rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white"
-            >
+            <Button onClick={() => void handleCreate()} className="justify-self-start">
               Save campaign
-            </button>
+            </Button>
           </div>
         </Panel>
 
@@ -104,27 +101,21 @@ export default function CampaignsPage() {
             {loading ? (
               <LoadingState label="Loading campaigns..." />
             ) : campaigns.length === 0 ? (
-              <EmptyState
-                title="No campaigns yet"
-                description="Create a campaign to start tracking sends and opens."
-              />
+              <EmptyState title="No campaigns yet" description="Create a campaign to start tracking sends and opens." />
             ) : (
               campaigns.map((campaign) => (
-                <div key={campaign._id} className="rounded-2xl border border-border bg-card p-4">
+                <div key={campaign._id} className="rounded-[10px] border border-[#e8ecf0] bg-white p-4">
                   <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                     <div>
-                      <p className="font-semibold">{campaign.name}</p>
-                      <p className="text-sm text-slate-500">{campaign.subject}</p>
-                      <p className="mt-1 text-xs uppercase tracking-[0.2em] text-slate-500">
+                      <p className="font-semibold text-[rgb(var(--nx-text-primary))]">{campaign.name}</p>
+                      <p className="text-sm text-[rgb(var(--nx-text-muted))]">{campaign.subject}</p>
+                      <p className="mt-1 text-xs uppercase tracking-[0.2em] text-[rgb(var(--nx-text-muted))]">
                         Sent {campaign.sentCount} · Opened {campaign.openedCount} · {campaign.status}
                       </p>
                     </div>
-                    <button
-                      onClick={() => void handleSend(campaign._id)}
-                      className="rounded-2xl border border-border bg-background px-4 py-2 text-sm font-semibold"
-                    >
+                    <Button variant="secondary" onClick={() => void handleSend(campaign._id)}>
                       Send
-                    </button>
+                    </Button>
                   </div>
                 </div>
               ))

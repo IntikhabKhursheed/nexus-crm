@@ -67,13 +67,13 @@ export default function SettingsPage() {
         {organization && (
           <Panel title="Brand and workspace" description="Tune the core settings for your organization.">
             <div className="grid gap-4 md:grid-cols-2">
-              <input className="rounded-2xl border border-border bg-card px-4 py-3 outline-none" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} />
-              <input className="rounded-2xl border border-border bg-card px-4 py-3 outline-none" value={form.timezone} onChange={(event) => setForm({ ...form, timezone: event.target.value })} />
-              <input className="rounded-2xl border border-border bg-card px-4 py-3 outline-none" value={form.currency} onChange={(event) => setForm({ ...form, currency: event.target.value })} />
-              <input type="file" accept="image/*" onChange={(event) => setLogoFile(event.target.files?.[0] ?? null)} className="rounded-2xl border border-border bg-card px-4 py-3 outline-none" />
-              <input className="rounded-2xl border border-border bg-card px-4 py-3 outline-none" value={form.primaryColor} onChange={(event) => setForm({ ...form, primaryColor: event.target.value })} />
-              <input className="rounded-2xl border border-border bg-card px-4 py-3 outline-none" value={form.secondaryColor} onChange={(event) => setForm({ ...form, secondaryColor: event.target.value })} />
-              <input className="rounded-2xl border border-border bg-card px-4 py-3 outline-none md:col-span-2" value={form.accentColor} onChange={(event) => setForm({ ...form, accentColor: event.target.value })} />
+              <input className="rounded-lg border border-[#e2e8f0] bg-[#fafafa] px-4 py-3 outline-none" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} />
+              <input className="rounded-lg border border-[#e2e8f0] bg-[#fafafa] px-4 py-3 outline-none" value={form.timezone} onChange={(event) => setForm({ ...form, timezone: event.target.value })} />
+              <input className="rounded-lg border border-[#e2e8f0] bg-[#fafafa] px-4 py-3 outline-none" value={form.currency} onChange={(event) => setForm({ ...form, currency: event.target.value })} />
+              <input type="file" accept="image/*" onChange={(event) => setLogoFile(event.target.files?.[0] ?? null)} className="rounded-lg border border-[#e2e8f0] bg-[#fafafa] px-4 py-3 outline-none" />
+              <input className="rounded-lg border border-[#e2e8f0] bg-[#fafafa] px-4 py-3 outline-none" value={form.primaryColor} onChange={(event) => setForm({ ...form, primaryColor: event.target.value })} />
+              <input className="rounded-lg border border-[#e2e8f0] bg-[#fafafa] px-4 py-3 outline-none" value={form.secondaryColor} onChange={(event) => setForm({ ...form, secondaryColor: event.target.value })} />
+              <input className="rounded-lg border border-[#e2e8f0] bg-[#fafafa] px-4 py-3 outline-none md:col-span-2" value={form.accentColor} onChange={(event) => setForm({ ...form, accentColor: event.target.value })} />
             </div>
             <button onClick={() => void handleSave()} className="mt-4 rounded-[8px] bg-[var(--nx-brand)] px-5 py-3 font-semibold text-white">Save settings</button>
           </Panel>

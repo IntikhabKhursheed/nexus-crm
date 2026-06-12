@@ -23,21 +23,21 @@ export default function AuditLogsPage() {
 
         <Panel className="space-y-3">
           {auditLogs.map((entry) => (
-            <div key={entry._id} className="rounded-2xl border border-border bg-card p-4 hover:bg-muted/40">
+            <div key={entry._id} className="rounded-[10px] border border-[#e8ecf0] bg-white p-4 hover:bg-[#f8fafc]">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="font-semibold">{entry.action}</p>
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm text-[rgb(var(--nx-text-muted))]">
                     {entry.entityType} · {entry.entityId}
                   </p>
                 </div>
-                <span className="text-xs uppercase tracking-[0.2em] text-slate-500">
+                <span className="text-xs uppercase tracking-[0.2em] text-[rgb(var(--nx-text-muted))]">
                   {new Date(entry.createdAt).toLocaleString()}
                 </span>
               </div>
             </div>
             ))}
-            {auditLogs.length === 0 && <p className="text-sm text-slate-500">No audit logs yet.</p>}
+            {auditLogs.length === 0 && <p className="text-sm text-[rgb(var(--nx-text-muted))]">No audit logs yet.</p>}
         </Panel>
       </div>
     </WorkspaceShell>

@@ -131,7 +131,7 @@ export default function ContactsPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full text-left">
-                <thead className="bg-muted/50 text-xs uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">
+                <thead className="bg-[#f9fafb] text-xs uppercase tracking-[0.22em] text-[rgb(var(--nx-text-muted))]">
                   <tr>
                     <th className="px-6 py-4">Name</th>
                     <th className="px-6 py-4">Email</th>
@@ -142,15 +142,15 @@ export default function ContactsPage() {
                 </thead>
                 <tbody>
                   {contacts.map((contact) => (
-                    <tr key={contact._id} className="border-b border-border/60 odd:bg-card even:bg-muted/30 hover:bg-[rgb(var(--secondary)/0.06)]">
+                    <tr key={contact._id} className="border-b border-[#e8ecf0] odd:bg-white even:bg-[#fbfcfd] hover:bg-[#f8fafc]">
                       <td className="px-6 py-4">
                         <Link href={`/contacts/${contact._id}`} className="font-semibold hover:underline">
                           {contact.name}
                         </Link>
-                        <p className="text-sm text-slate-500">{contact.role || "No role set"}</p>
+                        <p className="text-sm text-[rgb(var(--nx-text-muted))]">{contact.role || "No role set"}</p>
                       </td>
-                      <td className="px-6 py-4 text-sm text-slate-500">{contact.email || "-"}</td>
-                      <td className="px-6 py-4 text-sm text-slate-500">{contact.companyName || "-"}</td>
+                      <td className="px-6 py-4 text-sm text-[rgb(var(--nx-text-muted))]">{contact.email || "-"}</td>
+                      <td className="px-6 py-4 text-sm text-[rgb(var(--nx-text-muted))]">{contact.companyName || "-"}</td>
                       <td className="px-6 py-4">
                         <div className="flex flex-wrap gap-2">
                           {contact.tags.map((tag) => (

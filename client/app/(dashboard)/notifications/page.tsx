@@ -92,16 +92,16 @@ export default function NotificationsPage() {
                 key={notification._id}
                 type="button"
                 onClick={() => void handleMarkRead(notification._id)}
-                className={`block w-full rounded-3xl border p-4 text-left transition ${
-                  notification.isRead ? "border-border bg-card" : "border-slate-400/40 bg-muted"
+                className={`block w-full rounded-[10px] border p-4 text-left transition ${
+                  notification.isRead ? "border-[#e8ecf0] bg-white" : "border-[#c7d2fe] bg-[#f8fafc]"
                 }`}
               >
                 <div className="flex items-center justify-between gap-4">
                   <div>
-                    <p className="font-semibold">{notification.title}</p>
-                    <p className="mt-1 text-sm text-slate-500">{notification.message}</p>
+                    <p className="font-semibold text-[rgb(var(--nx-text-primary))]">{notification.title}</p>
+                    <p className="mt-1 text-sm text-[rgb(var(--nx-text-muted))]">{notification.message}</p>
                   </div>
-                  <span className="text-xs uppercase tracking-[0.2em] text-slate-500">
+                  <span className="text-xs uppercase tracking-[0.2em] text-[rgb(var(--nx-text-muted))]">
                     {new Date(notification.createdAt).toLocaleString()}
                   </span>
                 </div>
